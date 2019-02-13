@@ -1,0 +1,94 @@
+!!****if* source/physics/ImBound/ImBoundMain/LagForce/parallel/ib_forceInsideBody
+!!
+!!
+!! NAME
+!!
+!!  ib_forceInsideBody
+!!
+!!
+!! SYNOPSIS
+!!
+!!  ib_forceInsideBody()
+!!
+!!
+!! DESCRIPTION
+!!
+!! Routine that forces eulerian velocities inside bodies. Stub.
+!! For the moment only analytical shapes are used.
+!!
+!!***
+
+subroutine ib_forceInsideBody()
+
+  use SolidMechanics_data, only : sm_MeshMe,sm_NumProcs, sm_NumBodies, sm_BodyInfo, sm_meshComm
+
+  use Grid_interface, ONLY : Grid_getListOfBlocks,   &
+                             Grid_getDeltas,         &
+                             Grid_getBlkPtr,         &
+                             Grid_releaseBlkPtr,     &
+                             Grid_getBlkIndexLimits, &
+                             Grid_getBlkBoundBox, Grid_getBlkCenterCoords
+
+  use Timers_interface, ONLY : Timers_start, Timers_stop
+  use Driver_interface, only : Driver_abortFlash
+
+  use ImBound_data, only : ib_dt, ib_BlockMarker_flag
+
+  implicit none
+#include "constants.h"
+#include "Flash.h"
+#include "Flash_mpi.h"
+#include "SolidMechanics.h"
+
+
+  ! Local Vars
+  integer, allocatable, dimension(:) :: flag_forceinside
+  integer, allocatable, dimension(:) :: annbody_type,annbody_nparam,aux_v
+  real, allocatable, dimension(:,:)  :: annbody_param, r_bod, rd_bod, NwB_Nbod, aux_p,aux_r
+  real, allocatable, dimension(:,:,:) :: TNB_bod, aux_t
+
+  real, pointer, dimension(:,:,:,:) :: facexData,faceyData,facezData
+  real :: bsize(MDIM),coord(MDIM),del(MDIM)
+  integer :: blockCount
+  integer, dimension(MAXBLOCKS) :: blockList 
+  integer, dimension(2,MDIM) :: blkLimits, blkLimitsGC
+  real, dimension(2,MDIM) :: boundBox
+
+  real :: xedge(GRID_IHI_GC+1),xcell(GRID_IHI_GC)
+  real :: yedge(GRID_JHI_GC+1),ycell(GRID_JHI_GC)
+  real :: zedge(GRID_KHI_GC+1),zcell(GRID_KHI_GC)
+  
+  real :: TBN_xedge(MDIM,GRID_IHI_GC+1),TBN_xcell(MDIM,GRID_IHI_GC)
+  real :: TBN_yedge(MDIM,GRID_JHI_GC+1),TBN_ycell(MDIM,GRID_JHI_GC)
+  real :: TBN_zedge(MDIM,GRID_KHI_GC+1),TBN_zcell(MDIM,GRID_KHI_GC)
+
+  integer :: i,j,k,ibd,lb,blockID,imaster
+  integer :: xpt,ypt,zpt
+  real, parameter :: eps = 1.e-12
+  real, dimension(MDIM,LOW:HIGH) :: body_box,lb_box
+  integer :: pt(MDIM),auxpt(MDIM)
+  real :: vec(MDIM),vecnorm
+  real :: xvel,yvel,zvel
+
+  real :: TBN(MDIM,MDIM),TNB(MDIM,MDIM)
+  real :: locp1(MDIM,1),locp2(MDIM,1),glbp1(MDIM,1),glbp2(MDIM,1)
+  real :: radius, cyllen, cyllen2
+  integer :: cyldir
+  logical :: inlenflg
+  integer :: axis_1,axis_2,axis_3
+
+!  integer, save :: uvel_notforced(GRID_IHI_GC+1,GRID_JHI_GC,GRID_KHI_GC,MAXBLOCKS)
+!  integer, save :: vvel_notforced(GRID_IHI_GC,GRID_JHI_GC+1,GRID_KHI_GC,MAXBLOCKS)
+!  integer, save :: wvel_notforced(GRID_IHI_GC,GRID_JHI_GC,GRID_KHI_GC+1,MAXBLOCKS)
+
+!  real, save :: uvel_val(GRID_IHI_GC+1,GRID_JHI_GC,GRID_KHI_GC,MAXBLOCKS)
+!  real, save :: vvel_val(GRID_IHI_GC,GRID_JHI_GC+1,GRID_KHI_GC,MAXBLOCKS)
+!  real, save :: wvel_val(GRID_IHI_GC,GRID_JHI_GC,GRID_KHI_GC+1,MAXBLOCKS)
+  
+  integer :: ierr
+
+  logical, save :: firstcall =.true.
+
+  return
+
+end subroutine ib_forceInsideBody

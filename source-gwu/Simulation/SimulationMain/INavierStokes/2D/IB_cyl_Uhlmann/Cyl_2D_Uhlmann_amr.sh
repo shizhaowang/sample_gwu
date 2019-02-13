@@ -1,0 +1,1 @@
+./setup INavierStokes/2D/IB_cyl_Uhlmann/ -objdir=CYL_2D_UHLMANN_AMR -nxb=50 -nyb=50 -site=colonialone.gwu.edu -2d -auto -opt -maxblocks=3000 -gridinterpolation=native PfftSolver=HomBcTrigSolver  +pm4dev  -noclobber Bittree=1

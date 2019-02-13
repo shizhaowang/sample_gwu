@@ -1,0 +1,141 @@
+1c1
+< !!****if* source/Simulation/SimulationMain/INavierStokes/3D/kientzler_bubbleFS_caseA/Driver_evolveFlash
+---
+> !!****if* source/Simulation/SimulationMain/INavierStokes/2D/LidDrivenCavity/Driver_evolveFlash
+27c27
+< 
+---
+> !!$#define DEDUG_ALL
+37c37
+<   use Driver_data, ONLY: dr_globalMe, dr_nbegin,                    &
+---
+>   use Driver_data, ONLY: dr_globalMe, dr_nbegin,       &
+49,51d48
+<   use Grid_interface,    ONLY : Grid_getLocalNumBlks, &
+<                                 Grid_getListOfBlocks, &
+<                                 Grid_updateRefinement, Grid_fillGuardCells
+52a50,66
+>   use Grid_interface, ONLY : Grid_getListOfBlocks,   &
+>                              Grid_getDeltas,         &
+>                              Grid_getBlkBC,          &
+>                              Grid_getBlkPtr,         &
+>                              Grid_releaseBlkPtr,     &
+>                              Grid_getBlkIndexLimits, &
+>                              Grid_fillGuardCells,    &
+>                              Grid_putFluxData,       &
+>                              Grid_getFluxData,       &
+>                              Grid_conserveFluxes,    &
+>                              Grid_conserveField,     &
+>                              Grid_solvePoisson, Grid_getBlkBoundBox, Grid_getBlkCenterCoords
+> 
+>   use gr_interface, ONLY : gr_findMean
+> 
+> 
+>   use Gravity_interface, ONLY :  Gravity_potentialListOfBlocks
+54a69,70
+>   use Profiler_interface, ONLY : Profiler_start, Profiler_stop
+> 
+59c75,79
+<   use ins_interface, only  :  ins_velomg2center
+---
+>   use ins_interface, only  :  ins_velomg2center, &
+>                               ins_divergence, &
+>                               ins_fluxfix,    &
+>                               ins_fluxfix_p,  &
+>                               ins_corrector
+61c81
+<  use IncompNS_data, only : ins_cflflg, ins_isgs, ins_invRe
+---
+>   use IncompNS_data, only : ins_cflflg, ins_isgs, ins_invRe
+86c106
+<   logical :: endRun  
+---
+>   logical :: endRun
+90c110
+< 
+---
+>  
+95,96c115
+< 
+< !-----------------------------------------------------------------------------------------
+---
+>  
+99a119
+> 
+102a123
+>   call Profiler_start("FLASH_evolution")
+104a126,127
+>   call Grid_getListOfBlocks(LEAF,blockList,blockCount)
+> 
+110,111c133,134
+<   call Driver_computeDt( dr_nbegin,  dr_nstep,      &
+<                          dr_simTime, dr_dtOld, dr_dtNew)
+---
+>   call Driver_computeDt(dr_nbegin,  dr_nstep,      &
+>                         dr_simTime, dr_dtOld, dr_dtNew)
+115c138
+<   if (dr_globalMe .eq. MASTER_PE) write(*,*) 'dr_dt ===',dr_dt
+---
+>   if (dr_globalMe == MASTER_PE) write(*,*) 'dr_dt ===',dr_dt
+117d139
+<   call Grid_getListOfBlocks(LEAF,blockList,blockCount)
+120c142
+<   call ins_substractmeanvel_z(VELC_FACE_VAR,blockCount,blockList)  
+---
+>   call ins_substractmeanvel_z(VELC_FACE_VAR,blockCount,blockList)
+125d146
+< 
+141a163
+> 
+167d188
+<      !--------------------------------------------------------------------
+169,170d189
+<      !--------------------------------------------------------------------
+<      !--------------------------------------------------------------------
+175d193
+<      !print*, 'going into IncompNS'
+179,180c197,198
+<      call IncompNS( blockCount, blockList,   &
+<               dr_simTime, dr_dt, dr_dtOld,  sweepDummy)
+---
+>      call IncompNS(blockCount, blockList,   &
+>                    dr_simTime, dr_dt, dr_dtOld,  sweepDummy)
+212a231
+> 
+260c279
+<      endif
+---
+>      endif 
+264c283
+<         count = count + 1
+---
+>         count = count + 1      
+273c292
+<      call ins_velomg2center(blocklist,blockcount)
+---
+>      call ins_velomg2center(blocklist,blockcount) 
+279a299,300
+> 
+> 
+282a304
+> 
+285c307
+<         write(*,*) ' '
+---
+>         write(*,*) ' '        
+288c310
+<      endif
+---
+>      endif     
+298c320
+<      call Driver_computeDt( dr_nbegin,  dr_nstep,      &
+---
+>      call Driver_computeDt(dr_nbegin,  dr_nstep,      &
+302d323
+<      
+330a352
+>   call Profiler_stop("FLASH_evolution")
+337,339d358
+< 
+< 
+< 

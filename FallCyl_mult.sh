@@ -1,0 +1,2 @@
+./setup INavierStokes/2D/wangsz/FallCyl_mult_UhlmannCase/  -2d -auto -opt +ug -nxb=96 -nyb=96 -maxblocks=1 -gridinterpolation=native PfftSolver=HomBcTrigSolver  -objdir=FALLCYL_MULT_UHLMANNCASE -site=tianhe.tj.cn
+#./setup INavierStokes/2D/wangsz/FallCyl_mult_UhlmannCase/  -2d -auto -opt +ug -nxb=256 -nyb=256 -maxblocks=1 -gridinterpolation=native PfftSolver=HomBcTrigSolver  -objdir=FALLCYL_MULT_UHLMANNCASE -site=tianhe.tj.cn

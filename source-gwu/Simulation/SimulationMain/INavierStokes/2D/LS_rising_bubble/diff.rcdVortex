@@ -1,0 +1,91 @@
+Only in .: diff.rcdVortex
+Only in .: gr_expandDomain.F90
+diff ./Grid_markRefineDerefine.F90 ../LS_Zalesak/Grid_markRefineDerefine.F90
+30c30,31
+< #define  SPECIAL_REFINEMENT_1
+---
+> 
+> !#define SPECIAL_REFINEMENT 1
+32c33
+< !#define SPECIAL_THRESHOLD_KPD
+---
+> #define SPECIAL_THRESHOLD_KPD
+46d46
+<   use Grid_data, only : gr_imin,gr_imax,gr_jmin,gr_jmax,gr_kmin,gr_kmax
+100,101c100,103
+<   specs(1) =  0.2  !sim_xMin + 0./4.*(sim_xMax - sim_xMin) +.005
+<   specs(2) =  0.6 ! sim_xMax -.005
+---
+>   !specs(1) =  -100.   + 0.005 ! sim_xMin + 0./4.*(sim_xMax - sim_xMin) +.005
+>   !specs(2) =   100.  - 0.005 !sim_xMax -.005
+>   specs(1) =  -100.  !sim_xMin + 0./4.*(sim_xMax - sim_xMin) +.005
+>   specs(2) =  100. ! sim_xMax -.005
+104,105c106,109
+<   specs(3) =  0.2 !sim_yMin + 0./4.*(sim_yMax - sim_yMin) +.005
+<   specs(4) =  0.6 !sim_yMin + 4./4.*(sim_yMax - sim_yMin) -.005
+---
+>   !specs(3) =  -.51  !sim_yMin + 2./4.*(sim_yMax - sim_yMin) +.005
+>   !specs(4) =   .51  !sim_yMin + 4./4.*(sim_yMax - sim_yMin) -.005
+>   specs(3) =  -100. !sim_yMin + 0./4.*(sim_yMax - sim_yMin) +.005
+>   specs(4) =  100. !sim_yMin + 4./4.*(sim_yMax - sim_yMin) -.005
+108,109c112,113
+<   specs(5) =  gr_kmin !sim_zMin + 1./4.*(sim_zMax - sim_zMin) +.05
+<   specs(6) =  gr_kmax !sim_zMin + 3./4.*(sim_zMax - sim_zMin) -.05
+---
+>   specs(5) =  0. !sim_zMin + 1./4.*(sim_zMax - sim_zMin) +.05
+>   specs(6) =  0. !sim_zMin + 3./4.*(sim_zMax - sim_zMin) -.05
+diff ./ins_ab2rk3_VD.F90 ../LS_Zalesak/ins_ab2rk3_VD.F90
+238,239d237
+<   real :: T_ref, pi
+< 
+246,248d243
+<   T_ref = 4.0d0
+<   pi = acos(-1.0d0)
+< 
+924c919
+<           !facexData(VELC_FACE_VAR,i,j,1) = -ycell*2.0d0*acos(-1.0d0)
+---
+>           facexData(VELC_FACE_VAR,i,j,1) = -ycell*2.0d0*acos(-1.0d0)
+926d920
+<           facexData(VELC_FACE_VAR,i,j,1) = ((sin(PI*xface))**2)*sin(2.0d0*PI*ycell)*cos(PI*timeEndAdv/T_ref)
+940c934
+<           !faceyData(VELC_FACE_VAR,i,j,1) = xcell*2.0d0*acos(-1.0d0)
+---
+>           faceyData(VELC_FACE_VAR,i,j,1) = xcell*2.0d0*acos(-1.0d0)
+942,943c936
+<           faceyData(VELC_FACE_VAR,i,j,1) = -((sin(PI*yface))**2)*sin(2.0d0*PI*xcell)*cos(PI*timeEndAdv/T_ref)
+<       enddo
+---
+>        enddo
+Only in .: ls_vortex.sh
+Only in ../LS_Zalesak/: ls_zalesak.sh
+diff ./Simulation_initBlock.F90 ../LS_Zalesak/Simulation_initBlock.F90
+154,170c154,162
+<           !r0 = 0.15d0
+<           !x0 = 0.0d0
+<           !y0 = 0.25d0
+<           !solnData(DFUN_VAR,i,j,k) = r0 - sqrt((xcell-x0)**2+(ycell-y0)**2)
+<           !if (sqrt((xcell-x0)**2+(ycell-y0)**2) < r0) then
+<           !  if(abs(xcell-x0) < 0.03d0 .and. (ycell-y0) < 0.1d0) then
+<           !    solnData(DFUN_VAR,i,j,k) = -1.0d0
+<           !  endif
+<           !endif
+< 
+<           ! Shizhao 
+<           ! Jul 7, 2015
+<           ! Circle
+<            r0 = 0.15d0
+<            x0 = 0.5d0
+<            y0 = 0.75d0
+<            solnData(DFUN_VAR,i,j,k) = 1.0d0 - sqrt((xcell-x0)**2+(ycell-y0)**2)/r0
+---
+>           r0 = 0.15d0
+>           x0 = 0.0d0
+>           y0 = 0.25d0
+>           solnData(DFUN_VAR,i,j,k) = r0 - sqrt((xcell-x0)**2+(ycell-y0)**2)
+>           if (sqrt((xcell-x0)**2+(ycell-y0)**2) < r0) then
+>             if(abs(xcell-x0) < 0.03d0 .and. (ycell-y0) < 0.1d0) then
+>               solnData(DFUN_VAR,i,j,k) = -1.0d0
+>             endif
+>           endif
+Common subdirectories: ./.svn and ../LS_Zalesak/.svn

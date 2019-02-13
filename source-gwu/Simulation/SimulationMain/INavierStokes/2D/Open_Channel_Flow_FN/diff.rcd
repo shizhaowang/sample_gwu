@@ -1,0 +1,588 @@
+Only in .: diff.rcd
+Only in .: Driver_computeDt.F90
+diff ./Driver_evolveFlash.F90 ../freeSurfaceChannel/Driver_evolveFlash.F90
+2c2
+< !!kallalalal
+---
+> !!
+4c4
+< !!------------------------->
+---
+> !!
+39c39
+<                          dr_restart, dr_elapsedWCTime !, fileCounter
+---
+>                          dr_restart, dr_elapsedWCTime
+53c53
+<   use IO_data , ONLY : IO_checkpointFileIntervalStep, io_plotFileNumber, IO_checkpointFileIntervalTime
+---
+>   use IO_data , ONLY : IO_checkpointFileIntervalStep, io_plotFileNumber
+57,58d56
+<   use IncompNS_data, ONLY : ins_cflflg, my_plotFileIntervalTime
+< 
+70,71d67
+< 
+< !real :: my_plotFileIntervalTime
+77c73
+<   logical :: endRun, gridChanged, tecplot_flg  
+---
+>   logical :: endRun, gridChanged  
+80c76
+<   integer  count, firstfileflag
+---
+>   integer count, firstfileflag
+92c88
+< !  call RuntimeParameters_get('plotFileIntervalTime',my_plotFileIntervalTime)
+---
+> 
+174,187c170,174
+< 
+<      ! Output to Tecplot
+<      if (ins_cflflg .eq. 1) then ! Constant cfl       
+<        if (dr_nstep .gt. 1) then
+<        tecplot_flg =(1/my_plotFileIntervalTime*MOD(dr_simtime,my_plotFileIntervalTime) .le. &
+<                       dr_dt/my_plotFileIntervalTime)
+< 
+<        if (dr_globalMe .eq. MASTER_PE) write(*,*)'tecplot_flg=',tecplot_flg,dr_dt,dr_simTime,my_plotFileIntervalTime
+< 
+<        else
+<        tecplot_flg = .false.
+<        endif
+<      else                        ! Constant timestep
+<        tecplot_flg = (MOD(dr_nstep,IO_checkpointFileIntervalStep) .eq. 0)
+---
+>      if (MOD(dr_nstep,IO_checkpointFileIntervalStep) .eq. 0) then
+>      count = count + 1
+>      call outtotecplot(dr_globalMe,dr_simtime,dr_dt,dr_nstep,count, &
+>                        0.0,blockList,blockCount,firstfileflag)
+>      if (count .gt. 0) firstfileflag = 1
+189,197c176
+< 
+<      if (tecplot_flg) then
+<         ! Write to Grid to Tecplot:
+<         count = count + 1
+<         call outtotecplot(dr_globalMe,dr_simtime,dr_dt,dr_nstep,count, &
+<                           0.0,blockList,blockCount,firstfileflag)
+< 
+<       endif
+< 
+---
+>      !--------------------------------------------------------------------
+247c226
+< 
+---
+>      
+249d227
+<     if (tecplot_flg) then
+251d228
+< endif
+254d230
+<         
+277c253
+<      endif
+---
+>      end if
+diff ./flash.par ../freeSurfaceChannel/flash.par
+15c15
+< invRe           = 5.291e-3 # RE = 189
+---
+> invRe           = .05
+21,22c21,22
+< rho1  = 1.2
+< rho2  = 997.0
+---
+> rho1  = 1.0
+> rho2  = 1000.0
+25,26c25,26
+< vis1 = 0.022
+< vis2 = 1.0
+---
+> vis1 = 1.0
+> vis2 = 100.0
+30c30
+< gravY = 2.50811e-5
+---
+> gravY = 1.0
+32,39c32
+< sten = 0.09107
+< 
+< # Wave BC damping constant
+< dampC = 0.5
+< 
+< # RHS SCHEME
+< 
+< iConvU = 1
+---
+> sten = 1.0
+55,58c48,51
+< xmin		=   0.00000000000000
+< xmax		=   1000.00000000000000
+< ymin		=  -100.00000000000000
+< ymax		=   100.000000000000000
+---
+> xmin		= -8.400000000000000
+> xmax		=  22.00000000000000
+> ymin		= -11.100000000000000
+> ymax		=  4.100000000000000
+74,75c67,68
+< run_comment	= "2D Open Channel Flow"
+< log_file	= "LOG.log"
+---
+> run_comment	= "2D Inflow-Outflow Cylinder problem"
+> log_file	= "INS_INOUT.log"
+78,82c71,74
+< #restart		= .true.
+< #checkPointFileNumber= 309
+< #plotFileNumber  = 308
+< nend            = 3
+< tmax            = 30000000. 
+---
+> #checkPointFileNumber=1
+> #plotFileNumber  = 1
+> nend            = 10
+> tmax            = 300. 
+84c76
+< cfl             = 0.1
+---
+> cfl             = 0.05
+101,106c93,94
+< checkpointFileIntervalTime = 10.0
+< 
+< checkpointFileIntervalStep =15
+< 
+< plotFileIntervalTime = 10.0
+< 
+---
+> checkpointFileIntervalTime = 500.
+> checkpointFileIntervalStep =10 
+108c96,97
+< plotFileIntervalStep = 15
+---
+> plotFileIntervalTime = 500.
+> plotFileIntervalStep = 10
+113,115c102,104
+< nblockx	= 50
+< nblocky	= 10
+< lrefine_min	= 1
+---
+> nblockx	= 2
+> nblocky	= 1
+> lrefine_min	= 3
+117c106
+< mgrid_solveLevelKPD = 1
+---
+> mgrid_solveLevelKPD = 3
+119c108
+< nrefs           = 20 
+---
+> nrefs           = 1000000
+138c127
+< mgrid_max_vcycles = 10
+---
+> mgrid_max_vcycles = 20
+159c148
+< gr_hypreRelTol          = 1.0e-11
+---
+> gr_hypreRelTol          = 1.0e-10
+Only in ../freeSurfaceChannel/: freeSurfaceChannel.sh
+diff ./Grid_bcApplyToRegion.F90 ../freeSurfaceChannel/Grid_bcApplyToRegion.F90
+231,233d230
+<   real :: yycell
+<   real :: random
+<   real :: V
+546c543
+<                    CALL RANDOM_SEED
+---
+> 
+552c549
+<                          !  do i=1,guard+1
+---
+>                            do i=1,guard+1
+556,570c553,560
+<                                yycell = ycell - 0.5*del(JAXIS)
+<                              !  write(*,*)'Ycell=', ycell
+<                               if (yycell .ge. 0.0) then
+<                                 regionData(NGUARD+1,jjj,kkk,ivar) = 0
+<                              elseif ((yycell .le. 0) .and. (yycell .ge. -1.506)) then 
+<  call RANDOM_NUMBER(random)                  
+<  regionData(NGUARD+1,jjj,kkk,ivar)=-0.0000000244*ycell**8-0.000001707*ycell**7-0.00004592*ycell**6-0.0006009*ycell**5- &
+<                                         0.003817*ycell**4-0.009313*ycell**3-0.01206*ycell**2-0.2261*ycell-0.00006572+ 0.05*random
+<                              elseif ((yycell .le. -1.506) .and. (yycell .ge. -12.048)) then
+< !call RANDOM_NUMBER(random)
+<  regionData(NGUARD+1,jjj,kkk,ivar)=-0.0000000244*ycell**8-0.000001707*ycell**7-0.00004592*ycell**6-0.0006009*ycell**5-0.003817*ycell**4-0.009313*ycell**3-0.01206*ycell**2-0.2261*ycell-0.00006572
+<                              
+<                               elseif (yycell .le. -12.048) then
+<                                 regionData(NGUARD+1,jjj,kkk,ivar)= 1.0
+< 
+---
+>                               if (ycell .le. 0.) then
+>                                  !regionData(i,jjj,kkk,ivar)= (0.25+ycell)/0.25
+>                                  regionData(i,jjj,kkk,ivar)= 1.0 
+>                                  !if ( regionData(i,jjj,kkk,ivar) .lt. 0.) then
+>                                  !     regionData(i,jjj,kkk,ivar) = 0.0 
+>                                  !end if
+>                               else
+>                                  regionData(i,jjj,kkk,ivar)= 0.0
+572,576c562
+<                                    !    write(*,*)'This is u',jjj,ycell,regionData(i,jjj,kkk,ivar) 
+<                           !  end do
+<                         do i=1,NGUARD
+<                                 regionData(i,jjj,kkk,ivar)=2*regionData(NGUARD+1,jjj,kkk,ivar)-regionData(2*NGUARD+2-i,jjj,kkk,ivar)       
+<                         end do
+---
+>                             end do
+579c565
+< !                   else
+---
+>                    else
+581,583c567,569
+<           !##            do i = 1,guard+1
+<           !##              regionData(i,1:je,1:ke,ivar)= 0.0
+<           !##            end do
+---
+>                       do i = 1,guard+1
+>                          regionData(i,1:je,1:ke,ivar)= 0.0
+>                       end do
+585c571
+< !
+---
+> 
+600,636c586,589
+<                  if(ivar == VELC_FACE_VAR) then
+< 
+<                    call Grid_getBlkCenterCoords(blockHandle,coord)
+<                    call Grid_getDeltas(blockHandle,del)
+<                    call Grid_getBlkBoundBox(blockHandle,boundBox)
+< 
+<                    bsize(:) = boundBox(2,:) - boundBox(1,:)
+< 
+<                    if (je .gt. NGUARD) then
+<                       do kkk=1,ke
+<                          do jjj=1,je
+<                        !    do i=1,guard+1
+<                               ycell  = coord(JAXIS) - bsize(JAXIS)/2.0   +  &
+<                                        real((jjj+NGUARD) - NGUARD -1)*del(JAXIS)  +  &
+<                                        0.5*del(JAXIS)
+<                                yycell = ycell - 0.5*del(JAXIS)
+<                                ! write(*,*)'Ycell=', ycell
+<                               if (yycell .ge. 0.) then
+<                                V = 0
+<                              elseif ((yycell .le. 0) .and. (yycell .ge. -12.048)) then
+< V = -1*(-0.000000002669*yycell**7 -0.0000001306*yycell**6 -0.000002456*yycell**5 -0.00002126*yycell**4 -0.00007273*yycell**3 +0.000003264*yycell**2 -0.00006112*yycell-0.000001492)
+<   
+<                               elseif (yycell .le. -12.048) then
+<                               V= -0.00272009
+< 
+<                               end if
+<                         do i=1,NGUARD
+<                                 regionData(i,jjj,kkk,ivar)=2*V-regionData(2*NGUARD+1-i,jjj,kkk,ivar)
+<                         !write(*,*)regionData(i,jjj,kkk,ivar), 2*V
+<                         end do
+< 
+<                           end do
+<                      end do
+<           end if                  
+<             !     do i = 1,guard
+<             !     regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+<             !     end do
+---
+>                  if(ivar == VELC_FACE_VAR) then                               
+>                  do i = 1,guard
+>                  regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+>                  end do
+diff ./Grid_markRefineDerefine.F90 ../freeSurfaceChannel/Grid_markRefineDerefine.F90
+1c1
+< !!****if* source/Simulation/SimulationMain/INavierStokes/2D/bhagaWeber_mcHYPRE/Grid_markRefineDerefine
+---
+> !!****if* source/Simulation/SimulationMain/INavierStokes/2D/LidDrivenCavity/Grid_markRefineDerefine
+56d55
+<   !real, dimension(3) :: specs
+67a67,74
+> ! do l = 1,gr_numRefineVars
+> !     iref = gr_refine_var(l)
+> !     ref_cut = gr_refine_cutoff(l)
+> !     deref_cut = gr_derefine_cutoff(l)
+> !     ref_filter = gr_refine_filter(l)
+> !     call gr_markRefineDerefine(iref,ref_cut,deref_cut,ref_filter)
+> ! end do
+> 
+70,90c77,97
+< !#ifdef SPECIAL_REFINEMENT
+< !
+< !  specsSize=7
+< !
+< ! specs(1) =  -1000.0
+< ! specs(2) =  -0.45
+< ! specs(3) =  -1000.0 
+< !! specs(4) =   1000.0 
+< ! specs(5) =  0. 
+< !  specs(6) =  0. 
+< !
+< !  !! Decide wheather or not we refine only blocks completely 
+< !  !! contained within the rectangle (specs(7) .NE. 0.0)
+< !  !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+< !  specs(7) = 0.0
+< !
+< !  !! Bring all qualifying blocks to this level of refinement
+< !  lref = lrefine_max
+< !
+< !  call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+< !#endif
+---
+> #ifdef SPECIAL_REFINEMENT
+>   !! Call for the specialized refinement
+>   specsSize=7
+>   !! Coordinate information --------------------------------------
+>   !! define a range of coordinates of the rectangle in x-direction
+>   specs(1) =  -100.   + 0.005 ! sim_xMin + 0./4.*(sim_xMax - sim_xMin) +.005
+>   specs(2) =   100.  - 0.005 !sim_xMax -.005
+> 
+>   !! define a range of coordinates of the rectangle in y-direction
+>   specs(3) =  -.51  !sim_yMin + 2./4.*(sim_yMax - sim_yMin) +.005
+>   specs(4) =   .51  !sim_yMin + 4./4.*(sim_yMax - sim_yMin) -.005
+> 
+>   !! define a range of coordinates of the rectangle in z-direction
+>   specs(5) =  0. !sim_zMin + 1./4.*(sim_zMax - sim_zMin) +.05
+>   specs(6) =  0. !sim_zMin + 3./4.*(sim_zMax - sim_zMin) -.05
+>   !! End of coordinate information -------------------------------
+> 
+>   !! Decide wheather or not we refine only blocks completely 
+>   !! contained within the rectangle (specs(7) .NE. 0.0)
+>   !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+>   specs(7) = 0.0
+91a99
+>   !write(*,*) 'Specs=',specs(1:7)
+93c101,106
+< #ifdef SPECIAL_REFINEMENT
+---
+>   !! Bring all qualifying blocks to this level of refinement
+>   !lref = lrefine_max - 1
+>   lref = lrefine_max
+> 
+>   call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+> #endif
+95d107
+<   specsSize=3
+97,99c109,129
+<   specs(1) =  real(DFUN_VAR) 
+<   specs(2) =  -8.0
+<   specs(3) =  8.0
+---
+> #ifdef SPECIAL_REFINEMENT
+>   !! Call for the specialized refinement
+>   specsSize=7
+>   !! Coordinate information --------------------------------------
+>   !! define a range of coordinates of the rectangle in x-direction
+>   specs(1) =  -1.5  ! sim_xMin + 0./4.*(sim_xMax - sim_xMin) +.005
+>   specs(2) =   1.5  !sim_xMax -.005
+> 
+>   !! define a range of coordinates of the rectangle in y-direction
+>   specs(3) =  -2.5  !sim_yMin + 2./4.*(sim_yMax - sim_yMin) +.005
+>   specs(4) =  0.0  !sim_yMin + 4./4.*(sim_yMax - sim_yMin) -.005
+> 
+>   !! define a range of coordinates of the rectangle in z-direction
+>   specs(5) =  0. !sim_zMin + 1./4.*(sim_zMax - sim_zMin) +.05
+>   specs(6) =  0. !sim_zMin + 3./4.*(sim_zMax - sim_zMin) -.05
+>   !! End of coordinate information -------------------------------
+> 
+>   !! Decide wheather or not we refine only blocks completely 
+>   !! contained within the rectangle (specs(7) .NE. 0.0)
+>   !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+>   specs(7) = 0.0
+100a131,133
+>   !write(*,*) 'Specs=',specs(1:7)
+> 
+>   !! Bring all qualifying blocks to this level of refinement
+103c136
+<   call Grid_markRefineSpecialized_KPD (THRESHOLD,specsSize,specs,lref)
+---
+>   call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+106c139,143
+< !print*,"Done with Grid_markRefineSpecialized"
+---
+> 
+> 
+> 
+> 
+> 
+Only in .: gr_markVarThreshold_KPD.F90
+Only in .: IncompNS_data.F90
+Only in .: IncompNS_init.F90
+Only in .: ins_ab2rk3_VD.F90
+Only in .: ins_rhs_VD.F90
+Only in ../freeSurfaceChannel/: Makefile
+Only in .: open_channel.sh
+diff ./outtotecplot.F90 ../freeSurfaceChannel/outtotecplot.F90
+63c63
+<            vortz,divpp,tpdens,tpdensy,tpdfun,tpvisc,tpcurv,qcriterion
+---
+>            vortz,divpp,tpdens,tpdensy,tpdfun,tpvisc,tpcurv
+130c130
+<   i = TecIni('AMR2D'//NULLCHR,'x y u v p denX denY dfun visc curv vort div Q'//NULLCHR,   &
+---
+>   i = TecIni('AMR2D'//NULLCHR,'x y u v p denX denY dfun visc curv vort div'//NULLCHR,   &
+255,265c255
+<       
+<       tpdudxcorn(1:NXB+1,1:NYB+1) = 0.25*( facevarxx(NGUARD+2:nxc+1,NGUARD+1:nyc)+ &
+<                                            facevarxx(NGUARD+2:nxc+1,NGUARD:nyc-1) - &
+<                                           facevarxx(NGUARD:nxc-1,NGUARD+1:nyc) - &
+<                                            facevarxx(NGUARD:nxc-1,NGUARD:nyc-1) )/dx
+< 
+<      tpdvdycorn (1:NXB+1,1:NYB+1) = 0.25*( facevaryy(NGUARD+1:nxc,NGUARD+2:nyc+1) + &
+<                                            facevaryy(NGUARD:nxc-1,NGUARD+1:nyc+1) - &
+<                                            facevaryy(NGUARD:nxc-1,NGUARD:nyc-1) - &
+<                                            facevaryy(NGUARD+1:nxc,NGUARD:nyc-1) )/dy     
+<    
+---
+>          
+271,275d260
+<      ! Q criterion:
+<      ! -----------
+< 
+<         qcriterion = -0.5*tpdudxcorn**2 -0.5*tpdvdycorn**2 -tpdudycorn*tpdvdxcorn
+< 
+350,353d334
+<       ! Write Q:
+<       arraylb(:,:,1) = sngl(qcriterion)
+<       i = TecDat(ijk,arraylb,0)
+< 
+Only in .: rp_initParameters.F90
+diff ./Simulation_data.F90 ../freeSurfaceChannel/Simulation_data.F90
+24c24,25
+<   real, save    :: sim_xMin, sim_xMax, sim_yMin, sim_yMax, sim_zMin, sim_zMax
+---
+>   real, save    :: sim_xMin, sim_xMax, sim_yMin, sim_yMax
+>   real, save    :: sim_zMin, sim_zMax
+diff ./Simulation_initBlock.F90 ../freeSurfaceChannel/Simulation_initBlock.F90
+48,49d47
+< !  use ins_interface, ONLY : f, fprime
+< 
+62,63c60
+<   integer :: iii,jjj,kkk
+<   integer :: je,ke
+---
+> 
+68,71c65
+<   real :: xcell,xedge,ycell,yedge,yycell,xxcell,etha_x,etha_y,temp,temp2 ! etha_y uses center coordinates for x. etha_x uses center coordinate for y.
+<   real :: x_blas = 428.67
+<   real :: etha_coeff = 13.7477    
+<   !----------------------------------------------------------------------
+---
+>   real :: xcell,xedge,ycell,yedge
+73,96d66
+< !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+< !%%%%%%%%%%%%%% f and fprime functions for blasius solution ***
+< !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+< !CONTAINS
+< !REAL FUNCTION f (dummy_ethat)
+< 
+< !REAL, INTENT(IN) :: dummy_etha
+< !REAL :: temp
+< !temp = 0.0008788*dummy_etha**4 -0.02434*dummy_etha**3 +0.246*dummy_etha**2 &
+< !     -0.07853*dummy_etha +0.0108
+< !f =temp
+< !END FUNCTION f
+< 
+< !REAL FUNCTION fprime (sec_dummy_ehtha)
+< 
+< !REAL , INTENT(IN) :: sec_dummy_ehtha
+< !REAL :: temp
+< !temp   = -0.0000006457*sec_dummy_ehtha**8 +0.00002999*sec_dummy_ehtha**7 &
+< !         -0.0005358*sec_dummy_ehtha**6 +0.004655*sec_dummy_ehtha**5 &
+< !         -0.01963*sec_dummy_ehtha**4 + 0.03181*sec_dummy_ehtha**3 &
+< !         -0.02734*sec_dummy_ehtha**2 +0.3404*sec_dummy_ehtha - 0.00006472
+< !fprime = temp
+< !END FUNCTION fprime
+< !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+98c68,69
+< ! write(*,*)'CALLING INITIALCONDITIONS@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@' 
+---
+>   !----------------------------------------------------------------------
+>   
+146,147c117,118
+<           !solnData(DFUN_VAR,i,j,k) = ycell - 2*(2.7182**(-0.1*xcell))*sin(2*xcell)
+<          solnData(DFUN_VAR,i,j,k) = ycell !-sin(xcell)
+---
+>           solnData(DFUN_VAR,i,j,k) = ycell
+> 
+166,240c137,138
+<  ! facexData(VELC_FACE_VAR,:,:,:) = 1.0
+< !#################################################
+< !#### Setting X and Y-face values ################
+< !#################################################
+< 
+<   do k=1,blkLimitsGC(HIGH,KAXIS)
+<         do i=1,blkLimitsGC(HIGH,IAXIS)
+<             do j=1,blkLimitsGC(HIGH,JAXIS)
+<            xcell = coord(IAXIS) - bsize(IAXIS)/2.0 +   &
+<                    real(i - NGUARD - 1)*del(IAXIS) +   &
+<                    0.5*del(IAXIS)
+<            xxcell = xcell - 0.5*del(IAXIS)
+<            ycell  = coord(JAXIS) - bsize(JAXIS)/2.0 +  &
+<                    real(j - NGUARD - 1)*del(JAXIS)  +  &
+<                    0.5*del(JAXIS)
+<            yycell = ycell - 0.5*del(JAXIS)
+<           
+<           if (yycell .gt. 0.0) then
+<        
+<                 facexData(VELC_FACE_VAR,i,j,k) = 0.0
+<                 faceyData(VELC_FACE_VAR,i,j,k) = 0.0
+<           else
+<                 etha_x = (etha_coeff*abs(ycell))/sqrt(xxcell + x_blas)
+<                 etha_y = (etha_coeff*abs(yycell))/sqrt(xcell + x_blas)
+< 
+<      !   temp2=  -0.0000006457*etha_x**8 +0.00002999*etha_x**7 &
+<      !           -0.0005358*etha_x**6 +0.004655*etha_x**5 &
+<      !           -0.01963*etha_x**4 +0.03181*etha_x**3 &
+<      !           -0.02734*etha_x**2 +0.3404*etha_x -0.00006472
+< 
+< 
+< 
+<           if ( etha_x .lt. 8.0) then
+<         
+<         facexData(VELC_FACE_VAR,i,j,k) =1.0*(-0.0000006457*etha_x**8 +0.00002999*etha_x**7 &
+<                                              -0.0005358*etha_x**6 +0.004655*etha_x**5 &
+<                                              -0.01963*etha_x**4 + 0.03181*etha_x**3 &
+<                                              -0.02734*etha_x**2 +0.3404*etha_x - 0.00006472)
+< 
+<         temp =  -0.0000006457*etha_y**8 +0.00002999*etha_y**7 &
+<                 -0.0005358*etha_y**6 +0.004655*etha_y**5 &
+<                 -0.01963*etha_y**4 + 0.03181*etha_y**3 &
+<                 -0.02734*etha_y**2 +0.3404*etha_y - 0.00006472       
+<  
+<         temp2=  0.0008788*etha_y**4 -0.02434*etha_y**3 +0.246*etha_y**2 &
+<                 -0.07853*etha_y +0.0108
+< 
+<         faceyData(VELC_FACE_VAR,i,j,k) = -1.0*(0.5*sqrt(0.0056497/(xcell+x_blas))*(etha_y*temp-temp2))
+<         else
+<                 temp =0.0
+<                 temp2=0.0
+< 
+<          facexData(VELC_FACE_VAR,i,j,k)=1.0*(-0.0000006457*(8.0**8) +0.00002999*(8.0**7) &
+<                                              -0.0005358*(8.0**6) +0.004655*(8.0**5) &
+<                                              -0.01963*(8.0**4) + 0.03181*(8.0**3) &
+<                                              -0.02734*(8.0**2) +0.3404*8.0 - 0.00006472)
+< 
+<         temp = (-0.0000006457*(8.0**8) +0.00002999*(8.0**7) &
+<          -0.0005358*(8.0**6) +0.004655*(8.0**5) &
+<          -0.01963*(8.0**4) + 0.03181*(8.0**3) &
+<          -0.02734*(8.0**2) +0.3404*8.0 - 0.00006472)
+< 
+<         temp2=  0.0008788*(8.0**4) -0.02434*(8.0**3)+0.246*(8.0**2) &
+<                 -0.07853*8.0 +0.0108
+< 
+<         faceyData(VELC_FACE_VAR,i,j,k) =-1.0*(0.5*sqrt(0.0056497/(xcell+x_blas))*(8.0*temp-temp2)) 
+<        endif
+<         endif          
+<         enddo
+<      enddo
+<   enddo
+< 
+< !##########################################################
+< 
+< 
+---
+>   facexData(VELC_FACE_VAR,:,:,:) = 1.0
+>   faceyData(VELC_FACE_VAR,:,:,:) = 0.0
+Only in ../freeSurfaceChannel/: Simulation_init.F90
+Common subdirectories: ./.svn and ../freeSurfaceChannel/.svn

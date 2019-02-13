@@ -1,0 +1,815 @@
+1c1
+< !!****if* source/Simulation/SimulationMain/INavierStokes/3D/Snorkel_mcHYPRE_VD_wFS/Grid_bcApplyToRegion
+---
+> !!****if* source/Simulation/SimulationMain/INavierStokes/Grid_bcApplyToRegion
+168a169,170
+> #define TWO_PHASE_SEP
+> 
+174a177
+> #include "IncompNS.h"
+183c186
+<                              Grid_releaseBlkPtr
+---
+>                              Grid_releaseBlkPtr  
+189c192
+<                             uvel_y,vvel_y,wvel_y,ins_outflowgridChanged,RK3_SCHM,ins_intschm, &
+---
+>                             uvel_y,vvel_y,wvel_y,ins_outflowgridChanged,ins_intschm, &
+194c197,201
+<                             ins_rhoa,RK3_SCHM, ins_intschm, ins_tlevel
+---
+>                             ins_rhoa, ins_intschm, ins_tlevel
+> #endif
+> 
+> #ifdef TWO_PHASE_SEP
+>   use IncompNS_data, Only : ins_convvel1, ins_convvel2
+218c225
+<   integer    :: sign
+---
+>   integer    :: sign, iii,jjj,kkk
+226c233
+< 
+---
+>  
+231d237
+<   integer :: iii,jjj,kkk 
+251a258
+> 
+260a268,272
+>   !print*,'in applyBcRegion ',gridDataStruct,CENTER !,FACEX,FACEY,FACEZ 
+>   !print*,'in applyBcRegion ',varCount,guard,axis,face
+> 
+> 
+> 
+282,284d293
+<         !===================================================================================
+<         !=========================== LOW SIDE FACES ========================================
+<         !===================================================================================
+286d294
+< 
+334d341
+<            !****************************************************************************
+339,342c346,349
+<                 k = 2*guard+1                                                             !k=7
+<                 do i = 1,guard
+<                    regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)           !1=6, 2=5, 3=4
+<                 end do  
+---
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+>               end do  
+345,377c352,358
+<                 select case(ivar)
+< 
+<                  !case (PRES_VAR,DELP_VAR,TVIS_VAR,DFUN_VAR,PFUN_VAR,CURV_VAR)
+<                   case (PRES_VAR,DELP_VAR,TVIS_VAR,PFUN_VAR,VISC_VAR,DFUN_VAR,CURV_VAR)
+<                   k = 2*guard+1                                                           !k=7
+<                   do i = 1,guard
+<                      regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)         !1=6,2=5,3=4
+<                   end do 
+<                          
+<                  !case (DFUN_VAR,PFUN_VAR,CURV_VAR,VISC_VAR)
+<                  !case (PFUN_VAR,CURV_VAR,VISC_VAR)
+<                  !case (PFUN_VAR,VISC_VAR)
+<                   !case (PFUN_VAR,VISC_VAR,DFUN_VAR,CURV_VAR)
+<                   !do i = 1,guard
+<                   !  !regionData(i,1:je,1:ke,ivar)= regionData(guard+1,1:je,1:ke,ivar)      !1=4, 2=4, 3=4
+<                   !   regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)          !1=6, 2=5, 3=4
+<                   !end do
+<                   !case (DFUN_VAR)
+<                   !do i = 1,guard
+<                   !   regionData(i,1:je,1:ke,ivar)= regionData(guard+1,1:je,1:ke,ivar)      !1=4, 2=4, 3=4
+<                   !  !regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)          !1=6, 2=5, 3=4
+<                   !end do
+<                   !case (CURV_VAR)
+<                   !do i = 1,guard
+<                   !   regionData(i,1:je,1:ke,ivar)= regionData(guard+1,1:je,1:ke,ivar)      !1=4, 2=4, 3=4
+<                   !  !regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)          !1=6, 2=5, 3=4
+<                   !!k = 2*guard+1                                                             !k=7
+<                   !!do i = 1,guard
+<                   !!   regionData(i,1:je,1:ke,ivar)= regionData(guard+2,1:je,1:ke,ivar)       !!1=5, 2=5, 3=5
+<                   !end do
+< 
+<                 end select
+< 
+---
+>               select case(ivar)
+>               case (PRES_VAR,DELP_VAR,TVIS_VAR)
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+>               end do                          
+>               end select
+379d359
+<               else ! (if gridDataStruc not equal to WORK or CENTER)...     
+381c361,362
+<               if (isFace) then ! normal to boundary, up to boundary
+---
+>               else ! BOUNDARY CONDITIONS ON VELOCITIES               
+>               if (isFace) then ! Set to zero velocities normal to boundary, up to boundary
+383,384c364,366
+<                  do i = 1,guard+1
+<                     regionData(i,1:je,1:ke,ivar)= 0.                                      !1=0. 2=0, 3=0, 4=0
+---
+>                  k = 2*guard+2
+>                  do i = 1,guard
+>                     regionData(i,1:je,1:ke,ivar)= -regionData(k-i,1:je,1:ke,ivar)
+385a368
+>                  regionData(guard+1,1:je,1:ke,ivar)= 0.
+387,388c370,371
+<               else             ! not normal to boundary, at boundary
+<                  k = 2*guard+1                                                            !k=7
+---
+>               else             ! Use guardcells to set to zero velocities not normal to boundary, at boundary
+>                  k = 2*guard+1   
+391c374
+<                  regionData(i,1:je,1:ke,ivar)= -regionData(k-i,1:je,1:ke,ivar)            !1=-6, 2=-5,3=-4
+---
+>                  regionData(i,1:je,1:ke,ivar)= -regionData(k-i,1:je,1:ke,ivar)
+395,410d377
+<               !****************************************************************************
+<               if (isFace) then    ! (Face lies on boundary)
+<                  !======!
+<                  !------------------------------------------------------------------------------------------------------------
+<                  !if((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR).OR.(ivar==MGW8_FACE_VAR)) then
+<                  if((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR)) then
+<                    k = 2*guard+1                                                          !k=7
+<                    do i = 1,guard
+<                     !regionData(i,1:je,1:ke,ivar) = regionData(guard+1,1:je,1:ke,ivar)    !1=4, 2=4, 3=4
+<                     !regionData(i,1:je,1:ke,ivar) = regionData(guard+2,1:je,1:ke,ivar)    !1=5, 2=5, 3=5
+<                     regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)         !1=6, 2=5,3=4
+<                     !regionData(i,1:je,1:ke,ivar)= regionData(k  ,1:je,1:ke,ivar)         !1=7, 2=6,3=5
+<                    end do
+<                  !------------------------------------------------------------------------------------------------------------
+<                  end if
+<               else                ! (Not on Boundary)
+412,424d378
+<                  !------------------------------------------------------------------------------------------------------------
+<                  !if((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR).OR.(ivar==MGW8_FACE_VAR)) then
+<                  if((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR)) then
+<                    k = 2*guard+1                                                          !k=7 
+<                    do i = 1,guard
+<                      !regionData(i,1:je,1:ke,ivar) = regionData(guard+1,1:je,1:ke,ivar)    !1=4, 2=4, 3=4
+<                       regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)         !1to6 2to5 3to4
+<                    end do
+<                  !------------------------------------------------------------------------------------------------------------
+<                  endif
+< 
+<               endif
+<               !****************************************************************************
+426d379
+<            !****************************************************************************
+429,431d381
+<            !****************************************************************************
+<            !******************** Low Side Slip *****************************************
+<            !****************************************************************************
+435,441c385
+<              if (gridDataStruct==WORK) then !NEUMANN - LOW SIDE
+<                                 !----!
+< 
+<                k = 2*guard+1 
+<                do i = 1,guard
+<                   regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+<                end do  
+---
+>               if (gridDataStruct==WORK) then ! NEUMANN 
+443,444c387,390
+<              elseif (gridDataStruct==CENTER) then !NEUMANN BC FOR PRESSURE AND DELTAP - LOW SIDE
+<                                     !------!
+---
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+>               end do  
+446,447c392,395
+<                select case(ivar)
+<                case (PRES_VAR,DELP_VAR,TVIS_VAR,DFUN_VAR,PFUN_VAR,CURV_VAR,VISC_VAR)    !1to6, 2to5, 3to4
+---
+>               elseif (gridDataStruct==CENTER) then !NEUMANN BC FOR PRESSURE AND DELTAP
+>               select case(ivar)
+>               !case (PRES_VAR,DELP_VAR,TVIS_VAR)
+>               case (PRES_VAR,DELP_VAR,TVIS_VAR,DFUN_VAR,PFUN_VAR,CURV_VAR,VISC_VAR)    !1to6, 2to5, 3to4
+449,457d396
+<                  k = 2*guard+1 
+<                  do i = 1,guard
+<                     regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+<                  end do                          
+<                end select
+< 
+<              else                                      !BOUNDARY CONDITIONS ON VELOCITIES               
+<                if (isFace) then                        !Set to zero velocities normal to boundary, up to boundary
+<                   !======!
+459,462c398,410
+<                  if((ivar == VELC_FACE_VAR)) then 
+<                             !-------------!
+<                  do i = 1,guard+1
+<                     regionData(i,1:je,1:ke,ivar)= 0.       !Velocity on and normal to bdry = 0.0
+---
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+>               end do                          
+>               end select
+> 
+> 
+>               else ! BOUNDARY CONDITIONS ON VELOCITIES               
+>               if (isFace) then ! Set to zero velocities normal to boundary, up to boundary
+>                  if((ivar == VELC_FACE_VAR)) then
+>                  k = 2*guard+2
+>                  do i = 1,guard
+>                     regionData(i,1:je,1:ke,ivar)= -regionData(k-i,1:je,1:ke,ivar)
+464c412
+<                  !------------------------------------------------------------------------------------------------------------
+---
+>                  regionData(guard+1,1:je,1:ke,ivar)= 0.
+467d414
+<                  !elseif((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR)) then
+473,476c420,421
+<                  !------------------------------------------------------------------------------------------------------------
+<                  end if
+<                else   !(Not on Boundary) Use guardcells to set to zero normal gradients of velocities not normal to boundary, at boundary
+< 
+---
+>                  endif
+>               else             ! Use guardcells to set to zero normal gradients of velocities not normal to boundary, at boundary
+479,483c424,426
+<                             !-------------!
+<                    do i = 1,guard
+<                    regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)            !1to6, 2to5, 3to4
+<                    end do
+<                  !------------------------------------------------------------------------------------------------------------
+---
+>                  do i = 1,guard !-1
+>                  regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+>                  end do
+486d428
+<                  !elseif((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR)) then
+492d433
+<                  !------------------------------------------------------------------------------------------------------------
+493a435
+>               endif
+495c437
+<                endif
+---
+>               endif
+497d438
+<              endif
+499d439
+<            !****************************************************************************
+523,524c463,465
+<                  do i = 1,guard+1
+<                     regionData(i,1:je,1:ke,ivar)= 0.
+---
+>                  k = 2*guard+2
+>                  do i = 1,guard
+>                     regionData(i,1:je,1:ke,ivar)= -regionData(k-i,1:je,1:ke,ivar)
+525a467
+>                  regionData(guard+1,1:je,1:ke,ivar)= 0.
+539,541d480
+<            !****************************************************************************
+<            !****************************************************************************
+<            !****************************************************************************
+545c484
+<             if (gridDataStruct==WORK) then ! NEUMANN 
+---
+>               if (gridDataStruct==WORK) then ! NEUMANN 
+551c490
+<             elseif (gridDataStruct==CENTER) then !NEUMANN BC FOR PRESSURE AND DELTAP
+---
+>               elseif (gridDataStruct==CENTER) then !NEUMANN BC FOR PRESSURE AND DELTAP
+553,556c492,494
+<               !ORIG - case (PRES_VAR,DELP_VAR,TVIS_VAR)
+<                    !--------------------------------------------------------------!
+<               case (PRES_VAR,DELP_VAR,TVIS_VAR,DFUN_VAR,PFUN_VAR,CURV_VAR,VISC_VAR)    !1to6, 2to5, 3to4
+<                    !--------------------------------------------------------------!
+---
+>               !case (PRES_VAR,DELP_VAR,TVIS_VAR)
+>               case (PRES_VAR,DELP_VAR,TVIS_VAR,PFUN_VAR,CURV_VAR,VISC_VAR) !1to6, 2to5, 3to4
+> 
+561d498
+<               end select
+562a500,503
+> !*******************************************************************
+>                    !--------------------------------------------------------------!
+>               case (DFUN_VAR)    
+>                    !--------------------------------------------------------------!
+564,572c505,507
+<             else ! BOUNDARY CONDITIONS ON VELOCITIES               
+<               if (isFace) then ! Set to zero velocities normal to boundary, up to boundary
+<                  if(ivar == VELC_FACE_VAR) then
+<                    do i = 1,guard+1
+<                    !do i = 1,guard
+<                       !KPD - Inlet Velocity...
+<                       !-------------------------------
+<                       regionData(i,1:je,1:ke,ivar)= 1.
+<                    end do
+---
+>                    call Grid_getBlkCenterCoords(blockHandle,coord)
+>                    call Grid_getDeltas(blockHandle,del)
+>                    call Grid_getBlkBoundBox(blockHandle,boundBox)
+574,583c509
+< !!*******************************************************************
+< !!********** KPD Variable BL Inflow *********************************
+< !!*******************************************************************
+< !
+< !                   call Grid_getBlkCenterCoords(blockHandle,coord)
+< !                   call Grid_getDeltas(blockHandle,del)
+< !                   call Grid_getBlkBoundBox(blockHandle,boundBox)
+< !
+< !                   bsize(:) = boundBox(2,:) - boundBox(1,:)
+< !
+---
+>                    bsize(:) = boundBox(2,:) - boundBox(1,:)
+585,601c511,521
+< !                      do kkk=1,ke
+< !                         do jjj=1,je
+< !                           do i=1,guard+1
+< !                              ycell  = coord(JAXIS) - bsize(JAXIS)/2.0   +  &
+< !                                       real((jjj+NGUARD) - NGUARD - 1)*del(JAXIS)  +  &
+< !                                       0.5*del(JAXIS)
+< !                              if (ycell .le. 0.) then
+< !                                 regionData(i,jjj,kkk,ivar)= (0.25+ycell)/0.25
+< !                                 if ( regionData(i,jjj,kkk,ivar) .lt. 0.) then
+< !                                      regionData(i,jjj,kkk,ivar) = 0.0 
+< !                                 end if
+< !                              else
+< !                                 regionData(i,jjj,kkk,ivar)= 0.0
+< !                              end if
+< !                            end do
+< !                         end do
+< !                      end do
+---
+>                       do kkk=1,ke
+>                          do jjj=1,je
+>                            do i=1,guard
+>                               ycell  = coord(JAXIS) - bsize(JAXIS)/2.0   +  &
+>                                        real((jjj+NGUARD) - NGUARD - 1)*del(JAXIS)  +  &
+>                                        0.5*del(JAXIS)
+> 
+>                               regionData(i,jjj,kkk,ivar)= ycell
+>                             end do
+>                          end do
+>                       end do
+605,608c525,580
+< !
+< !!*******************************************************************
+< !!*******************************************************************
+< !!*******************************************************************
+---
+> 
+> !*******************************************************************
+> 
+>               end select
+> 
+> 
+>               else ! BOUNDARY CONDITIONS ON VELOCITIES               
+> 
+>               if (isFace) then ! Set to zero velocities normal to boundary, up to boundary
+>                  !------------------------------------------------------------------------------------------
+>                  if(ivar == VELC_FACE_VAR) then
+>                   !-- KPD Original --
+> #ifdef TWO_PHASE_SEP
+>                  do i = 1,guard+1
+>                     regionData(i,1:je,1:ke,ivar)= 1.
+>                  end do
+> #else 
+> !*******************************************************************
+> !********** KPD Variable BL Inflow *********************************
+> !*******************************************************************
+> 
+>                    call Grid_getBlkCenterCoords(blockHandle,coord)
+>                    call Grid_getDeltas(blockHandle,del)
+>                    call Grid_getBlkBoundBox(blockHandle,boundBox)
+> 
+>                    bsize(:) = boundBox(2,:) - boundBox(1,:)
+> 
+>                    if (je .gt. NGUARD) then
+>                       do kkk=1,ke
+>                          do jjj=1,je
+>                            do i=1,guard+1
+>                               ycell  = coord(JAXIS) - bsize(JAXIS)/2.0   +  &
+>                                        real((jjj+NGUARD) - NGUARD - 1)*del(JAXIS)  +  &
+>                                        0.5*del(JAXIS)
+>                               if (ycell .le. 0.) then
+>                                  !regionData(i,jjj,kkk,ivar)= (0.25+ycell)/0.25
+>                                  regionData(i,jjj,kkk,ivar)= 1.0 
+>                                  !if ( regionData(i,jjj,kkk,ivar) .lt. 0.) then
+>                                  !     regionData(i,jjj,kkk,ivar) = 0.0 
+>                                  !end if
+>                               else
+>                                  regionData(i,jjj,kkk,ivar)= 0.0
+>                               end if
+>                             end do
+>                          end do
+>                       end do
+>                    else
+>                       ! ? KPD ?
+>                       do i = 1,guard+1
+>                          regionData(i,1:je,1:ke,ivar)= 0.0
+>                       end do
+>                    end if
+> #endif /* TWO_PHASE_SEP */
+> !*******************************************************************
+> !*******************************************************************
+> !*******************************************************************
+618c590
+<               else        ! Use guardcells to set to zero normal gradients of velocities not normal to boundary, at boundary
+---
+>               else             ! Use guardcells to set to zero normal gradients of velocities not normal to boundary, at boundary
+621,623c593,595
+<                    do i = 1,guard
+<                    regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)           !1to6 2to5 3to4
+<                    end do
+---
+>                  do i = 1,guard
+>                  regionData(i,1:je,1:ke,ivar)= regionData(k-i,1:je,1:ke,ivar)
+>                  end do
+630a603
+> 
+634,636d606
+<             endif
+<            !****************************************************************************
+<            !****************************************************************************
+638c608,609
+<            case(OUTFLOW_INS) ! Convective outflow boundary condition. Only done for face == high  
+---
+>               endif
+> 
+639a611,612
+>            case(OUTFLOW_INS) ! Convective outflow boundary condition. Only done for face == high  
+>            
+647,649d619
+<         !===================================================================================
+<         !=========================== HIGH SIDE FACES =======================================
+<         !===================================================================================
+696d665
+<            !****************************************************************************
+698a668,669
+>               if (gridDataStruct==WORK) then ! NEUMANN
+> 
+700d670
+<               if(isFace)k=k+1
+704a675,699
+>               elseif (gridDataStruct==CENTER) then !NEUMANN BC FOR PRESSURE AND DELTAP
+>               select case(ivar)
+>               case (PRES_VAR,DELP_VAR,TVIS_VAR)
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)
+>               end do                          
+>               end select
+> 
+> 
+>               else ! BOUNDARY CONDITIONS ON VELOCITIES  
+> 
+>               k = 2*guard+1
+>               if(isFace) then
+>               ! First order down-wind for collocated var in the face:
+>               do i =1,guard
+>                  regionData(guard+1+i,1:je,1:ke,ivar)= regionData(guard+i,1:je,1:ke,ivar)
+>               enddo
+>               else
+>               do i = 1,guard
+>                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)
+>               end do
+>               endif
+> 
+>               endif
+706d700
+<            !****************************************************************************
+711,766c705,708
+<                 k = 2*guard+1 
+<                 do i = 1,guard
+<                    regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)              !6=1, 5=2, 4=3
+<                 end do                          
+< 
+<                 elseif (gridDataStruct==CENTER) then !NEUMANN BC FOR PRESSURE AND DELTAP
+<                   select case(ivar)
+< 
+<                    !case (PRES_VAR,DELP_VAR,TVIS_VAR,DFUN_VAR,PFUN_VAR,CURV_VAR)
+<                     case (PRES_VAR,DELP_VAR,TVIS_VAR,PFUN_VAR,VISC_VAR,DFUN_VAR,CURV_VAR)
+<                     k = 2*guard+1 
+<                     do i = 1,guard
+<                        regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)          !6=1, 5=2, 4=3
+<                     end do
+<                           
+<                    !!case (DFUN_VAR,PFUN_VAR,CURV_VAR,VISC_VAR)
+<                     !case (PFUN_VAR,VISC_VAR)
+<                     !k = 2*guard+1                                                            !k=7
+<                     !do i = 1,guard
+<                     !   regionData(k-i,1:je,1:ke,ivar)= regionData(guard,1:je,1:ke,ivar)      !6=3, 5=3, 4=3
+<                     !end do
+<                     !case (DFUN_VAR)
+<                     !k = 2*guard+1                                                            !k=7
+<                     !do i = 1,guard
+<                     !   regionData(k-i,1:je,1:ke,ivar)= regionData(guard,1:je,1:ke,ivar)    !6=3, 5=3, 4=3
+<                     !end do
+<                     !case (CURV_VAR)
+<                     !k = 2*guard+1                                                            !k=7
+<                     !do i = 1,guard
+<                     !   regionData(k-i,1:je,1:ke,ivar)= regionData(guard,1:je,1:ke,ivar)      !6=3, 5=3, 4=3
+<                     !!do i = 1,guard
+<                     !!   regionData(k-i,1:je,1:ke,ivar)= regionData(guard-1,1:je,1:ke,ivar)    !6=2, 5=2, 4=2
+<                     !end do
+< 
+<                 end select
+< 
+<               else ! (gridDataStruct not equal to WORK or CENTER)...          
+< 
+<                 k = 2*guard+1                                                                !k=7
+<                 if (isFace) then ! (Face variable lies on face) 
+<                    if(ivar == VELC_FACE_VAR) then
+<                    !k=k+1                                                                    !  !k=8
+<                    !do i = 1,guard+1                                                         !  !i = 1 to 4
+<                    do i = 1,guard                                                            !i = 1 to 3
+<                       regionData(k-i,1:je,1:ke,ivar)= 0.                                     !6=0, 5=0, 4=0
+<                    end do
+<                    endif
+<                 else             ! (Face variable that don't lie on face)
+<                    if(ivar == VELC_FACE_VAR) then                               
+<                    k = 2*guard+1                                                             !k=7
+<                    do i = 1,guard
+<                    regionData(k-i,1:je,1:ke,ivar)= -regionData(i,1:je,1:ke,ivar)             !6=-1, 5=-2, 4=-3
+<                    end do
+<                    endif
+<                 endif
+<                 !****************************************************************************
+---
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)
+>               end do                          
+768,791c710,736
+<                 if (isFace) then ! (Face variable lies on face)
+<                    !-------------------------------------------------------------------------------
+<                    !if((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR).OR.(ivar==MGW8_FACE_VAR)) then
+<                    if((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR)) then
+<                      k = 2*guard+1                                                           !k=7
+<                      do i = 1,guard
+<                        !regionData(k-i,1:je,1:ke,ivar)= regionData(guard+1,1:je,1:ke,ivar)    !6=4, 5=4, 4=4
+<                       !!regionData(k-i,1:je,1:ke,ivar)= regionData(guard  ,1:je,1:ke,ivar)    !6=3, 5=3, 4=3
+<                        regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)           !6=1, 5=2, 4=3
+<                      end do
+<                    !--------------------------------------------------------------------------------
+<                    endif
+<                 else             ! (Face variable that don't lie on face) 
+<                    !--------------------------------------------------------------------------------
+<                    !if((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR).OR.(ivar==MGW8_FACE_VAR)) then
+<                    if((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR)) then
+<                      k = 2*guard+1                                                           !k=7
+<                      do i = 1,guard
+<                        !regionData(k-i,1:je,1:ke,ivar)= regionData(guard,1:je,1:ke,ivar)      !6=3, 5=3, 4=3 
+<                        regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)          !6=1, 5=2, 4=3
+<                      end do
+<                    !--------------------------------------------------------------------------------
+<                    endif
+<                 endif
+---
+>               elseif (gridDataStruct==CENTER) then !NEUMANN BC FOR PRESSURE AND DELTAP
+>               select case(ivar)
+>               case (PRES_VAR,DELP_VAR,TVIS_VAR)
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)
+>               end do                          
+>               end select
+> 
+> 
+>               else ! BOUNDARY CONDITIONS ON VELOCITIES               
+>               k = 2*guard+1
+>               if (isFace) then ! Set to zero velocities normal to boundary, up to boundary
+>                  if(ivar == VELC_FACE_VAR) then
+>                  k = k+1
+>                  do i = 1,guard
+>                     regionData(k-i,1:je,1:ke,ivar)= -regionData(i,1:je,1:ke,ivar)
+>                  end do
+>                  regionData(guard+1,1:je,1:ke,ivar)= 0.
+>                  endif
+>               else             ! Use guardcells to set to zero velocities not normal to boundary, at boundary
+>                  if(ivar == VELC_FACE_VAR) then                               
+>                  do i = 1,guard
+>                  regionData(k-i,1:je,1:ke,ivar)= -regionData(i,1:je,1:ke,ivar)
+>                  end do
+>                  endif
+>               endif
+793d737
+<                 !****************************************************************************
+795d738
+<            !****************************************************************************
+797,799d739
+<            !****************************************************************************
+<            !****************************************************************************
+<            !****************************************************************************
+810a751
+>               !case (PRES_VAR,DELP_VAR,TVIS_VAR)
+812c753
+< 
+---
+>            
+815c756
+<                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)      !6to1 5to2 4to3
+---
+>                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)
+825,826c766,767
+<                  do i = 1,guard+1
+<                     regionData(k-i,1:je,1:ke,ivar)= 0.
+---
+>                  do i = 1,guard
+>                     regionData(k-i,1:je,1:ke,ivar)= -regionData(i,1:je,1:ke,ivar)
+828c769
+<                  !------------------------------------------------------------------------------------------------------------
+---
+>                  regiondata(guard+1,1:je,1:ke,ivar)= 0.
+830d770
+<                  !elseif((ivar==RH1F_FACE_VAR).OR.(ivar==RH2F_FACE_VAR)) then
+839,840c779,780
+<                  do i = 1,guard
+<                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)               !6to1 5to2 4to3
+---
+>                  do i = 1,guard !-1
+>                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)
+856d795
+<            !****************************************************************************
+895d833
+<            !****************************************************************************
+932a871,872
+> 
+> 
+936,939c876,879
+<                 k = 2*guard+1 
+<                 do i = 1,guard
+<                    regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)
+<                 end do                          
+---
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)
+>               end do                          
+942,950c882,890
+<                 select case(ivar)
+<                 !KPD - ORIG case (PRES_VAR,DELP_VAR,TVIS_VAR)
+<                 case (PRES_VAR,DELP_VAR,TVIS_VAR,DFUN_VAR,PFUN_VAR,CURV_VAR,VISC_VAR)
+< 
+<                 k = 2*guard+1 
+<                 do i = 1,guard
+<                    regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar)  !6to1 5to2 4to3
+<                 end do                          
+<                 end select
+---
+>               select case(ivar)
+>               !KPD - ORIG case (PRES_VAR,DELP_VAR,TVIS_VAR)
+>               case(PRES_VAR,DELP_VAR,TVIS_VAR,DFUN_VAR,PFUN_VAR,CURV_VAR,VISC_VAR)
+> 
+>               k = 2*guard+1 
+>               do i = 1,guard
+>                  regionData(k-i,1:je,1:ke,ivar)= regionData(i,1:je,1:ke,ivar) !6to1 5to2 4to3
+>               end do                          
+>               end select
+968c908
+<                      regionData(k-i,1:je,1:ke,ivar)= regionData(guard,1:je,1:ke,ivar)       !6to3 5to3 4to3
+---
+>                      regionData(k-i,1:je,1:ke,ivar)=regionData(guard,1:je,1:ke,ivar)       !6to3 5to3 4to3
+974,975c914
+< 
+<                 alfadt = ins_alfa*dr_dt        
+---
+>               alfadt = ins_alfa*dr_dt        
+977,978c916,917
+<                 ! Get blocks dx, dy ,dz:
+<                 call Grid_getDeltas(blockHandle,del)              
+---
+>               ! Get blocks dx, dy ,dz:
+>               call Grid_getDeltas(blockHandle,del)              
+980,981c919,920
+<                 ! X direction:
+<                 if (axis .eq. IAXIS) then               
+---
+>               ! X direction:
+>               if (axis .eq. IAXIS) then               
+990,992c929
+<             !print*,"ins_predcorrflg",ins_predcorrflg
+< 
+<             if (ins_predcorrflg) then     
+---
+>               if (ins_predcorrflg) then
+993a931
+> #ifdef TWO_PHASE_SEP
+995,998c933,961
+<              
+<            !do iii=ja,jb
+<            !   print*,"BC",iii,uvel_x(guard,iii,1,HIGH,blockHandle),uvel_x(guard+1,iii,1,HIGH,blockHandle)
+<            !end do
+---
+> #if NDIM == 3
+>   write(*,*) 'Please add the effect of guard cell for the index kkk in the uvel_x...'
+>   stop
+> #endif             
+>                    call Grid_getBlkCenterCoords(blockHandle,coord)
+>                    call Grid_getDeltas(blockHandle,del)
+>                    call Grid_getBlkBoundBox(blockHandle,boundBox)
+>                    bsize(:) = boundBox(2,:) - boundBox(1,:)
+>                    do kkk=1,ke
+>                      do jjj=1,je
+>                        do i=guard+1,guard+1
+>                          ycell  = coord(JAXIS) - bsize(JAXIS)/2.0   +  &
+>                              real((jjj+NGUARD) - NGUARD - 1)*del(JAXIS)  +  &
+>                              0.5*del(JAXIS)
+>                          if(ycell > 0.0d0) then
+>                            regionData(i,jjj,kkk,ivar) = uvel_x(i,jjj+NGUARD,kkk,HIGH,blockHandle) -&
+>                               (ins_convvel1(HIGH,axis)*alfadt/del(axis))* &
+>                               (uvel_x(i,jjj+NGUARD,kkk,HIGH,blockHandle) - &
+>                                uvel_x(i-1,jjj+NGUARD,kkk,HIGH,blockHandle))
+>                          else
+>                            regionData(i,jjj,kkk,ivar) = uvel_x(i,jjj+NGUARD,kkk,HIGH,blockHandle) -&
+>                               (ins_convvel2(HIGH,axis)*alfadt/del(axis))* &
+>                               (uvel_x(i,jjj+NGUARD,kkk,HIGH,blockHandle) - &
+>                                uvel_x(i-1,jjj+NGUARD,kkk,HIGH,blockHandle))
+>                           endif
+>                         end do
+>                       end do
+>                     end do
+>                  endif
+999a963,965
+> #else
+>                  if(ivar == VELC_FACE_VAR) then ! U velocities on X face grid
+>              
+1006c972
+< 
+---
+> #endif
+1007a974,1013
+> #ifdef TWO_PHASE_SEP
+> #if NDIM == 3
+>   write(*,*) 'Please add the effect of guard cell for the index kkk in regionData'
+>   stop
+> #endif             
+>                  if(ivar == VELC_FACE_VAR) then ! U velocities on X face grid
+>              
+>                    call Grid_getBlkCenterCoords(blockHandle,coord)
+>                    call Grid_getDeltas(blockHandle,del)
+>                    call Grid_getBlkBoundBox(blockHandle,boundBox)
+> 
+>                    bsize(:) = boundBox(2,:) - boundBox(1,:)
+> 
+>                    do kkk=ka,kb
+>                      do jjj=ja,jb
+>                        do i=guard+1,guard+1
+>                          ycell  = coord(JAXIS) - bsize(JAXIS)/2.0   +  &
+>                              real((jjj+NGUARD) - NGUARD - 1)*del(JAXIS)  +  &
+>                              0.5*del(JAXIS)
+>                          if(ycell > 0.0d0) then
+>                            vvel_x(i,jjj,kkk,HIGH,blockHandle) = vvel_x(i,jjj,kkk,HIGH,blockHandle) - & 
+>                              (ins_convvel1(HIGH,axis)*alfadt/del(axis))* &
+>                              (vvel_x(i-1,jjj,kkk,HIGH,blockHandle) - &
+>                               vvel_x(i-2,jjj,kkk,HIGH,blockHandle))
+> 
+>                          else
+>                            vvel_x(i,jjj,kkk,HIGH,blockHandle) = vvel_x(i,jjj,kkk,HIGH,blockHandle) - & 
+>                              (ins_convvel2(HIGH,axis)*alfadt/del(axis))* &
+>                              (vvel_x(i-1,jjj,kkk,HIGH,blockHandle) - &
+>                               vvel_x(i-2,jjj,kkk,HIGH,blockHandle))
+> 
+>                           endif
+>                         end do
+>                       end do
+>                     end do
+>                    regionData(guard+1,1:je,1:ke,ivar) =  vvel_x(guard+1,ja:jb,ka:kb,HIGH,blockHandle)
+>                  endif
+> 
+> 
+> #else
+1017a1024
+> #endif
+1019a1027,1031
+> #ifdef TWO_PHASE_SEP
+>   write(*,*) 'TWO_PHASE_SEP is not tested for 3D flows'
+>   stop
+> 
+> #else
+1029d1040
+< 
+1031a1043
+> #endif
+1034,1036c1046
+<                  !---------------------------
+<             else !ins_predcorrflg Now .FALSE.
+<                  !---------------------------
+---
+>               else !ins_predcorrflg
+1062c1072,1073
+<             endif !ins_predcorrflg
+---
+> 
+>               endif !ins_predcorrflg
+1227d1237
+<               endif ! Velocities
+1229,1231d1238
+<               !***********************************************************************************
+<               !***************************  END OUTFLOW_INS **************************************
+<               !***********************************************************************************
+1233a1241
+>               endif ! Velocities
+1241,1242d1248
+< 
+< 

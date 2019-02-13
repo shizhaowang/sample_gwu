@@ -1,0 +1,333 @@
+Only in ./../cylinderBeneathSurface_SolidMech_d059/: cylinderFS_SBM_d059.sh
+Only in .: cylinderFS_SBM.sh
+Only in .: cylinderFS.sh
+Only in .: diff.rcd
+diff ./Driver_evolveFlash.F90 ./../cylinderBeneathSurface_SolidMech_d059/Driver_evolveFlash.F90
+141c141,142
+<      dr_dtOld = 8888.8888
+---
+> !     dr_dtOld = 0.001
+>      dr_dtOld = dr_dt
+diff ./flash.par ./../cylinderBeneathSurface_SolidMech_d059/flash.par
+9a10,12
+> # Particles
+> pt_maxPerProc=100000
+> 
+11c14,15
+< invRe           = .0003585
+---
+> #invRe           = .0003585
+> invRe           = .0001315
+30c34,35
+< gravY = 4.545454
+---
+> #gravY = 4.545454
+> gravY = 1.6667 
+33c38,39
+< sten = 0.238
+---
+> #sten = 0.238
+> sten = 0.03195 
+132c138
+< nrefs           = 100
+---
+> nrefs           = 10000
+Common subdirectories: ./garnetCylinders and ./../cylinderBeneathSurface_SolidMech_d059/garnetCylinders
+diff ./Grid_markRefineDerefine.F90 ./../cylinderBeneathSurface_SolidMech_d059/Grid_markRefineDerefine.F90
+110,121c110,121
+< #ifdef SPECIAL_REFINEMENT
+<   specsSize2=3
+<   specs2(1) =  real(DFUN_VAR)
+<   specs2(2) =  -0.1
+<   specs2(3) =   0.1
+<   lref = 6!lrefine_max-2
+<   !lref = lrefine_max-1
+<   !lref = lrefine_max
+<   call Grid_markRefineSpecialized_KPD (THRESHOLD,specsSize2,specs2,lref)
+< #endif
+< 
+<      call MPI_BARRIER(gr_meshComm,ierr)
+---
+> !!#ifdef SPECIAL_REFINEMENT
+> !!  specsSize2=3
+> !!  specs2(1) =  real(DFUN_VAR)
+> !!  specs2(2) =  -0.25
+> !!  specs2(3) =   0.25
+> !!  lref = 5!lrefine_max-2
+> !!  !lref = lrefine_max-1
+> !!  !lref = lrefine_max
+> !!  call Grid_markRefineSpecialized_KPD (THRESHOLD,specsSize2,specs2,lref)
+> !!#endif
+> !!
+> !!     call MPI_BARRIER(gr_meshComm,ierr)
+126c126
+<   specsA(2) =-0.90
+---
+>   specsA(2) =-1.09
+136c136
+<   specsA(2) =-0.90
+---
+>   specsA(2) =-1.09
+146c146
+<   specsA(2) =-0.90
+---
+>   specsA(2) =-1.09
+148c148
+<   specsA(4) = 0.52
+---
+>   specsA(4) = 0.51
+diff ./Grid_markRefineDerefine.F90.lref4 ./../cylinderBeneathSurface_SolidMech_d059/Grid_markRefineDerefine.F90.lref4
+80a81,93
+>   specsSizeC=3
+>   specsC(1) = real(OMGZ_VAR)
+>   specsC(2) =   5.0
+>   specsC(3) =  -5.0
+> 
+>   !lref = lrefine_max-2
+>   !lref = lrefine_max-1
+>   lref = 4!lrefine_max
+> 
+>   call Grid_markRefineSpecialized_KPD (VORTICITY,specsSizeC,specsC,lref)
+> #endif
+> 
+> #ifdef SPECIAL_REFINEMENT
+91c104
+<   lref = lrefine_max
+---
+>   lref = 4!lrefine_max
+114c127
+<   lref = lrefine_max
+---
+>   lref = 4!lrefine_max
+118a132,144
+> !#ifdef SPECIAL_REFINEMENT
+> !  specsSizeC=3
+> !  specsC(1) = real(OMGZ_VAR)
+> !  specsC(2) =   1.0
+> !  specsC(3) =  -1.0
+> !
+> !  !lref = lrefine_max-2
+> !  !lref = lrefine_max-1
+> !  lref = lrefine_max
+> !
+> !  call Grid_markRefineSpecialized_KPD (VORTICITY,specsSizeC,specsC,lref)
+> !#endif
+> 
+diff ./Grid_markRefineDerefine.F90.lref5 ./../cylinderBeneathSurface_SolidMech_d059/Grid_markRefineDerefine.F90.lref5
+84c84
+<   specsA(3) =  -1.78
+---
+>   specsA(3) =  -2.0
+90,91c90,91
+<   lref = lrefine_max-1
+<   !lref = lrefine_max
+---
+>   !lref = lrefine_max-1
+>   lref = lrefine_max
+113,114c113,114
+<   lref = lrefine_max-1
+<   !lref = lrefine_max
+---
+>   !lref = lrefine_max-1
+>   lref = lrefine_max
+119,120d118
+<      call MPI_BARRIER(gr_meshComm,ierr)
+< 
+124c122,123
+<   specsA(2) =   0.75
+---
+>   !specsA(2) =   0.75
+>   specsA(2) =   2.50
+142,145c141,144
+<   !specsC(1) =  -5. 
+<   !specsC(2) =   100.  
+<   specsC(3) =  -.1
+<   specsC(4) =   .1
+---
+>   !specsC(1) =  -5.
+>   !specsC(2) =   100.
+>   specsC(3) =  -.3
+>   specsC(4) =   .3
+156a156
+> !     call MPI_BARRIER(gr_meshComm,ierr)
+Only in .: Grid_markRefineDerefine.F90.lref6
+diff ./Grid_markRefineDerefine.F90.lref7 ./../cylinderBeneathSurface_SolidMech_d059/Grid_markRefineDerefine.F90.lref7
+83,84c83,84
+<   specsC(2) =   6.00
+<   specsC(3) =  -6.00
+---
+>   specsC(2) =   5.0
+>   specsC(3) =  -5.0
+86d85
+<   lref = lrefine_max-3
+89c88
+<   !lref = lrefine_max
+---
+>   lref = 4!lrefine_max
+97,98d95
+<   !Old...specsA(2) =   7.0
+<   !New...specsA(2) =   100.0
+105d101
+<   lref = lrefine_max-3
+108c104
+<   !lref = lrefine_max
+---
+>   lref = 4!lrefine_max
+120a117,118
+>   !specsC(1) =  -5. 
+>   !specsC(2) =   100.  
+127d124
+<   lref = lrefine_max-3
+130c127
+<   !lref = lrefine_max
+---
+>   lref = 4!lrefine_max
+135,136d131
+<      call MPI_BARRIER(gr_meshComm,ierr)
+< 
+142c137
+<   specsA(3) =  -1.78
+---
+>   specsA(3) =  -2.25
+147c142
+<   lref = lrefine_max-2
+---
+>   lref = 5!lrefine_max-2
+154,173c149
+< !KPD - Original Free Surface AMR...
+< #ifdef SPECIAL_REFINEMENT
+<   specsSizeC=7
+<   specsC(1) =  -100.
+<   specsC(2) =   100.
+<   !specsC(1) =  -5. 
+<   !specsC(2) =   100.  
+<   specsC(3) =  -.1
+<   specsC(4) =   .1
+<   specsC(5) =  -100.
+<   specsC(6) =  100.
+<   specsC(7) = 0.0
+<   !! Bring all qualifying blocks to this level of refinement
+<   lref = lrefine_max-2
+<   !lref = lrefine_max-1
+<   !lref = lrefine_max
+< 
+<   call Grid_markRefineSpecialized (RECTANGLE,specsSizeC,specsC,lref)
+< #endif
+< 
+---
+> !!KPD - Original Free Surface AMR...
+175,181c151,162
+< !  specsSizeC=3
+< !  specsC(1) = real(OMGZ_VAR)
+< !  specsC(2) =   6.00
+< !  specsC(3) =  -6.00
+< !
+< !  lref = lrefine_max-3
+< !  !lref = lrefine_max-2
+---
+> !  specsSizeC=7
+> !  specsC(1) =  -100.
+> !  specsC(2) =   100.
+> !  !specsC(1) =  -5.
+> !  !specsC(2) =   100.
+> !  specsC(3) =  -.1
+> !  specsC(4) =   .1
+> !  specsC(5) =  -100.
+> !  specsC(6) =  100.
+> !  specsC(7) = 0.0
+> !  !! Bring all qualifying blocks to this level of refinement
+> !  lref = 5!lrefine_max-2
+185c166
+< !  call Grid_markRefineSpecialized_KPD (VORTICITY,specsSizeC,specsC,lref)
+---
+> !  call Grid_markRefineSpecialized (RECTANGLE,specsSizeC,specsC,lref)
+188,202c169,178
+< !#ifdef SPECIAL_REFINEMENT
+< !  specsSizeA=7
+< !  specsA(1) =  -0.61
+< !  specsA(2) =   0.61
+< !  specsA(3) =  -1.7
+< !  specsA(4) =   -0.35
+< !  specsA(5) =  -100.0
+< !  specsA(6) =   100.0
+< !  specsA(7) = 0.0
+< !  !lref = lrefine_max-2
+< !  lref = lrefine_max-1
+< !  !lref = lrefine_max
+< !
+< !  call Grid_markRefineSpecialized (RECTANGLE,specsSizeA,specsA,lref)
+< !#endif
+---
+> #ifdef SPECIAL_REFINEMENT
+>   specsSize2=3
+>   specs2(1) =  real(DFUN_VAR)
+>   specs2(2) =  -0.25
+>   specs2(3) =   0.25
+>   lref = 5!lrefine_max-2
+>   !lref = lrefine_max-1
+>   !lref = lrefine_max
+>   call Grid_markRefineSpecialized_KPD (THRESHOLD,specsSize2,specs2,lref)
+> #endif
+204,212c180,188
+< !#ifdef SPECIAL_REFINEMENT
+< !  specsSizeA=7
+< !  specsA(1) = 0.0
+< !  specsA(2) =-0.9
+< !  specsA(3) = 0.0
+< !  specsA(4) = 0.505
+< !  lref = lrefine_max-1
+< !  call Grid_markRefineSpecialized (WITHRADIUS,specsSizeA,specsA,lref)
+< !#endif
+---
+> #ifdef SPECIAL_REFINEMENT
+>   specsSizeA=7
+>   specsA(1) = 0.0
+>   specsA(2) =-0.9
+>   specsA(3) = 0.0
+>   specsA(4) = 0.48
+>   lref = lrefine_max
+>   call Grid_markRefineSpecialized (WITHRADIUS,specsSizeA,specsA,lref)
+> #endif
+219c195,205
+<   specsA(4) = 0.505
+---
+>   specsA(4) = 0.50
+>   lref = lrefine_max
+>   call Grid_markRefineSpecialized (WITHRADIUS,specsSizeA,specsA,lref)
+> #endif
+> 
+> #ifdef SPECIAL_REFINEMENT
+>   specsSizeA=7
+>   specsA(1) = 0.0
+>   specsA(2) =-0.9
+>   specsA(3) = 0.0
+>   specsA(4) = 0.52
+225a212,215
+> !  specsSizeC=3
+> !  specsC(1) = real(OMGZ_VAR)
+> !  specsC(2) =   1.0
+> !  specsC(3) =  -1.0
+227,233c217,218
+< !  specsSize3=4
+< !
+< !  specs3(1) =  0.0
+< !  specs3(2) = -0.9
+< !  specs3(3) =  0.0
+< !  specs3(4) =  0.5
+< !
+---
+> !  !lref = lrefine_max-2
+> !  !lref = lrefine_max-1
+236c221
+< !  call Grid_markRefineSpecialized (WITHRADIUS, specsSize3,specs3,lref)
+---
+> !  call Grid_markRefineSpecialized_KPD (VORTICITY,specsSizeC,specsC,lref)
+238a224,225
+> !     call MPI_BARRIER(gr_meshComm,ierr)
+> !
+Only in .: Grid_markRefineDerefine.F90.lref7alt
+Binary files ./sm_body.00001.h5 and ./../cylinderBeneathSurface_SolidMech_d059/sm_body.00001.h5 differ
+Binary files ./sm_body.00002.h5 and ./../cylinderBeneathSurface_SolidMech_d059/sm_body.00002.h5 differ
+Binary files ./sm_body.00003.h5 and ./../cylinderBeneathSurface_SolidMech_d059/sm_body.00003.h5 differ
+Binary files ./sm_body.00004.h5 and ./../cylinderBeneathSurface_SolidMech_d059/sm_body.00004.h5 differ
+Common subdirectories: ./.svn and ./../cylinderBeneathSurface_SolidMech_d059/.svn

@@ -1,0 +1,27 @@
+Only in .: diff.rcd
+diff ./ib_distributedForces.F90 ../FallCyl_mult_pcc_Uhlmann/ib_distributedForces.F90
+7,8c7,8
+< !#define TWO_POINTSP 1
+< !#define NORMAL_GRAD_CORR
+---
+> #define TWO_POINTSP 1
+> #define NORMAL_GRAD_CORR
+186c186,190
+<   alpha = 2.0
+---
+> !  alpha = 2.0
+> !  alpha = 1.2
+> !  alpha = 1.5
+> !  alpha = 2.5
+>   alpha = 3.5
+859a864,867
+>   dpdn = -(     ubdd*nxp +      vbdd*nyp +      wbdd*nzp) + & ! -rho*Du/Dt * n
+>             (ins_gravX*nxp + ins_gravY*nyp + ins_gravZ*nzp);    ! +rho*    g * n
+>   zL = zpres - dpdn*h;
+> 
+913c921,922
+<   particleData(PRES_PART_PROP) = zL2
+---
+>   !particleData(PRES_PART_PROP) = zL2
+>   particleData(PRES_PART_PROP) = zL
+Common subdirectories: ./.svn and ../FallCyl_mult_pcc_Uhlmann/.svn

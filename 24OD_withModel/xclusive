@@ -1,0 +1,10 @@
+application called MPI_Abort(MPI_COMM_WORLD, 1) - process 1
+yhrun: error: cn1920: task 1: Exited with exit code 1
+yhrun: First task exited 60s ago
+yhrun: tasks 0,2-11: running
+yhrun: task 1: exited abnormally
+yhrun: Terminating job step 11376084.0
+slurmd[cn1920]: *** STEP 11376084.0 KILLED AT 2018-08-22T16:08:57 WITH SIGNAL 9 ***
+yhrun: Job step aborted: Waiting up to 2 seconds for job step to finish.
+slurmd[cn1920]: *** STEP 11376084.0 KILLED AT 2018-08-22T16:08:57 WITH SIGNAL 9 ***
+yhrun: error: cn1920: tasks 0,2-11: Killed

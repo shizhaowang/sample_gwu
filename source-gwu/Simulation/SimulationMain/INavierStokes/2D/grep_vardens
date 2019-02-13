@@ -1,0 +1,118 @@
+./bhagaWeber_mcHYPRE/flash.par:62:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE/flash.par:63:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE/ORIG_flash_pm.par:52:log_file	= "VARDENS_EllipticalBub.log"
+./bhagaWeber_mcHYPRE/ORIG_flash_pm.par:53:basenm		= "VARDENS_Ellipticalbub_"
+./bhagaWeber_mcHYPRE/flash_pm.par:53:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE/flash_pm.par:54:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE/flash_ug.par:44:log_file	= "VARDENS_EllipticalBub.log"
+./bhagaWeber_mcHYPRE/flash_ug.par:45:basenm		= "VARDENS_Ellipticalbub_"
+./bhagaWeber_mcHYPRE/bhagaWeber_HYPRE_3d.sh:1:./setup INavierStokes/VARDENS/3D/bhagaWeber_mcHYPRE  -3d -auto  -nxb=16 -nyb=16 -nzb=16 -maxblocks=100 -gridinterpolation=native +pm4dev -objdir=BHAGA_mcHYPRE_3d_PGI_FAST_cfl -site=splash.seas.gwu.edu -noclobber
+./bhagaWeber_mcHYPRE/Config:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./bhagaWeber_mcHYPRE/Config:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./bhagaWeber_mcHYPRE/Config:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./bhagaWeber_mcHYPRE/.svn/text-base/Config.svn-base:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./bhagaWeber_mcHYPRE/.svn/text-base/Config.svn-base:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./bhagaWeber_mcHYPRE/.svn/text-base/Config.svn-base:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./bhagaWeber_mcHYPRE/.svn/text-base/flash_pm.par.svn-base:53:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE/.svn/text-base/flash_pm.par.svn-base:54:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE/.svn/text-base/bhagaWeber_HYPRE_3d.sh.svn-base:1:./setup INavierStokes/VARDENS/3D/bhagaWeber_mcHYPRE  -3d -auto  -nxb=16 -nyb=16 -nzb=16 -maxblocks=100 -gridinterpolation=native +pm4dev -objdir=BHAGA_mcHYPRE_3d_PGI_FAST_cfl -site=splash.seas.gwu.edu -noclobber
+./bhagaWeber_mcHYPRE/.svn/text-base/flash.par.svn-base:62:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE/.svn/text-base/flash.par.svn-base:63:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE/.svn/text-base/ORIG_flash_pm.par.svn-base:52:log_file	= "VARDENS_EllipticalBub.log"
+./bhagaWeber_mcHYPRE/.svn/text-base/ORIG_flash_pm.par.svn-base:53:basenm		= "VARDENS_Ellipticalbub_"
+./bhagaWeber_mcHYPRE/.svn/text-base/flash_ug.par.svn-base:44:log_file	= "VARDENS_EllipticalBub.log"
+./bhagaWeber_mcHYPRE/.svn/text-base/flash_ug.par.svn-base:45:basenm		= "VARDENS_Ellipticalbub_"
+./bhagaWeber_mcHYPRE_PERIODIC/flash.par:60:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE_PERIODIC/flash.par:61:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE_PERIODIC/Config:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./bhagaWeber_mcHYPRE_PERIODIC/Config:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./bhagaWeber_mcHYPRE_PERIODIC/Config:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./bhagaWeber_mcHYPRE_PERIODIC/.svn/text-base/Config.svn-base:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./bhagaWeber_mcHYPRE_PERIODIC/.svn/text-base/Config.svn-base:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./bhagaWeber_mcHYPRE_PERIODIC/.svn/text-base/Config.svn-base:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./bhagaWeber_mcHYPRE_PERIODIC/.svn/text-base/flash.par.svn-base:60:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE_PERIODIC/.svn/text-base/flash.par.svn-base:61:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE_rodolphe/flash.par:69:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE_rodolphe/flash.par:70:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE_rodolphe/bhagaWeber_HYPRE_3d.sh:1:./setup INavierStokes/VARDENS/3D/bhagaWeber_mcHYPRE  -3d -auto  -nxb=16 -nyb=16 -nzb=16 -maxblocks=100 -gridinterpolation=native +pm4dev -objdir=BHAGA_mcHYPRE_3d_PGI_FAST_cfl -site=splash.seas.gwu.edu -noclobber
+./bhagaWeber_mcHYPRE_rodolphe/Config:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./bhagaWeber_mcHYPRE_rodolphe/Config:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./bhagaWeber_mcHYPRE_rodolphe/Config:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./bhagaWeber_mcHYPRE_rodolphe/.svn/text-base/Config.svn-base:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./bhagaWeber_mcHYPRE_rodolphe/.svn/text-base/Config.svn-base:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./bhagaWeber_mcHYPRE_rodolphe/.svn/text-base/Config.svn-base:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./bhagaWeber_mcHYPRE_rodolphe/.svn/text-base/bhagaWeber_HYPRE_3d.sh.svn-base:1:./setup INavierStokes/VARDENS/3D/bhagaWeber_mcHYPRE  -3d -auto  -nxb=16 -nyb=16 -nzb=16 -maxblocks=100 -gridinterpolation=native +pm4dev -objdir=BHAGA_mcHYPRE_3d_PGI_FAST_cfl -site=splash.seas.gwu.edu -noclobber
+./bhagaWeber_mcHYPRE_rodolphe/.svn/text-base/ins_computeDtLocal.F90.svn-base:1:!!****if* source/physics/IncompNS/IncompNSMain/vardens/ins_computeDtLocal
+./bhagaWeber_mcHYPRE_rodolphe/.svn/text-base/flash.par.svn-base:69:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE_rodolphe/.svn/text-base/flash.par.svn-base:70:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE_rodolphe/ins_computeDtLocal.F90:1:!!****if* source/physics/IncompNS/IncompNSMain/vardens/ins_computeDtLocal
+./bhagaWeber_mcHYPRE_Sussman/flash.par:62:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE_Sussman/flash.par:63:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE_Sussman/ORIG_flash_pm.par:52:log_file	= "VARDENS_EllipticalBub.log"
+./bhagaWeber_mcHYPRE_Sussman/ORIG_flash_pm.par:53:basenm		= "VARDENS_Ellipticalbub_"
+./bhagaWeber_mcHYPRE_Sussman/flash_pm.par:53:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE_Sussman/flash_pm.par:54:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE_Sussman/flash_ug.par:44:log_file	= "VARDENS_EllipticalBub.log"
+./bhagaWeber_mcHYPRE_Sussman/flash_ug.par:45:basenm		= "VARDENS_Ellipticalbub_"
+./bhagaWeber_mcHYPRE_Sussman/bhagaWeber_HYPRE_3d.sh:1:./setup INavierStokes/VARDENS/3D/bhagaWeber_mcHYPRE  -3d -auto  -nxb=16 -nyb=16 -nzb=16 -maxblocks=100 -gridinterpolation=native +pm4dev -objdir=BHAGA_mcHYPRE_3d_PGI_FAST_cfl -site=splash.seas.gwu.edu -noclobber
+./bhagaWeber_mcHYPRE_Sussman/Config:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./bhagaWeber_mcHYPRE_Sussman/Config:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./bhagaWeber_mcHYPRE_Sussman/Config:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/Config.svn-base:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/Config.svn-base:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/Config.svn-base:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/flash_pm.par.svn-base:53:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/flash_pm.par.svn-base:54:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/bhagaWeber_HYPRE_3d.sh.svn-base:1:./setup INavierStokes/VARDENS/3D/bhagaWeber_mcHYPRE  -3d -auto  -nxb=16 -nyb=16 -nzb=16 -maxblocks=100 -gridinterpolation=native +pm4dev -objdir=BHAGA_mcHYPRE_3d_PGI_FAST_cfl -site=splash.seas.gwu.edu -noclobber
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/flash.par.svn-base:62:log_file	= "VARDENS_RisingBub.log"
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/flash.par.svn-base:63:basenm		= "VARDENS_RisingBub_"
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/ORIG_flash_pm.par.svn-base:52:log_file	= "VARDENS_EllipticalBub.log"
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/ORIG_flash_pm.par.svn-base:53:basenm		= "VARDENS_Ellipticalbub_"
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/flash_ug.par.svn-base:44:log_file	= "VARDENS_EllipticalBub.log"
+./bhagaWeber_mcHYPRE_Sussman/.svn/text-base/flash_ug.par.svn-base:45:basenm		= "VARDENS_Ellipticalbub_"
+./EllipseBubble_mcHYPRE/flash.par:64:log_file	= "VARDENS_EllipticalBub.log"
+./EllipseBubble_mcHYPRE/flash.par:65:basenm		= "VARDENS_Ellipticalbub_"
+./EllipseBubble_mcHYPRE/ORIG_Config:10:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./EllipseBubble_mcHYPRE/ORIG_Config:17:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens/poisson/PfftTopLevelSolve
+./EllipseBubble_mcHYPRE/Config:9:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./EllipseBubble_mcHYPRE/Config:17:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./EllipseBubble_mcHYPRE/Config:22:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./EllipseBubble_mcHYPRE/.svn/text-base/Config.svn-base:9:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./EllipseBubble_mcHYPRE/.svn/text-base/Config.svn-base:17:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./EllipseBubble_mcHYPRE/.svn/text-base/Config.svn-base:22:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./EllipseBubble_mcHYPRE/.svn/text-base/flash.par.svn-base:64:log_file	= "VARDENS_EllipticalBub.log"
+./EllipseBubble_mcHYPRE/.svn/text-base/flash.par.svn-base:65:basenm		= "VARDENS_Ellipticalbub_"
+./EllipseBubble_mcHYPRE/.svn/text-base/ORIG_Config.svn-base:10:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./EllipseBubble_mcHYPRE/.svn/text-base/ORIG_Config.svn-base:17:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens/poisson/PfftTopLevelSolve
+./freeSurfaceChannel/Config:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./freeSurfaceChannel/Config:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./freeSurfaceChannel/Config:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./freeSurfaceChannel/.svn/text-base/Config.svn-base:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./freeSurfaceChannel/.svn/text-base/Config.svn-base:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./freeSurfaceChannel/.svn/text-base/Config.svn-base:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./IB_Cyl_parallelIBVP_HYPRE_VD_halfDiamBel/Config:6:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./IB_Cyl_parallelIBVP_HYPRE_VD_halfDiamBel/Config:19:   REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./IB_Cyl_parallelIBVP_HYPRE_VD_halfDiamBel/Config:23:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./IB_Cyl_parallelIBVP_HYPRE_VD_halfDiamBel/.svn/text-base/Config.svn-base:6:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./IB_Cyl_parallelIBVP_HYPRE_VD_halfDiamBel/.svn/text-base/Config.svn-base:19:   REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./IB_Cyl_parallelIBVP_HYPRE_VD_halfDiamBel/.svn/text-base/Config.svn-base:23:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./Open_Channel_Flow_FN/ins_ab2rk3_VD.F90:1:!!****if* source/physics/IncompNS/IncompNSMain/vardens/ins_ab2rk3_VD
+./Open_Channel_Flow_FN/IncompNS_data.F90:1:!!****if* source/physics/IncompNS/IncompNSMain/vardens/IncompNS_data
+./Open_Channel_Flow_FN/IncompNS_init.F90:1:!!****if* source/physics/IncompNS/IncompNSMain/vardens/IncompNS_init
+./Open_Channel_Flow_FN/Config:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./Open_Channel_Flow_FN/Config:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./Open_Channel_Flow_FN/Config:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./Open_Channel_Flow_FN/.svn/text-base/IncompNS_data.F90.svn-base:1:!!****if* source/physics/IncompNS/IncompNSMain/vardens/IncompNS_data
+./Open_Channel_Flow_FN/.svn/text-base/Config.svn-base:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./Open_Channel_Flow_FN/.svn/text-base/Config.svn-base:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./Open_Channel_Flow_FN/.svn/text-base/Config.svn-base:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./Open_Channel_Flow_FN/.svn/text-base/gr_markVarThreshold_KPD.F90.svn-base:1:!!****if* source/Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG/gr_markVarThreshold_KPD
+./Open_Channel_Flow_FN/.svn/text-base/IncompNS_init.F90.svn-base:1:!!****if* source/physics/IncompNS/IncompNSMain/vardens/IncompNS_init
+./Open_Channel_Flow_FN/.svn/text-base/ins_ab2rk3_VD.F90.svn-base:1:!!****if* source/physics/IncompNS/IncompNSMain/vardens/ins_ab2rk3_VD
+./Open_Channel_Flow_FN/gr_markVarThreshold_KPD.F90:1:!!****if* source/Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG/gr_markVarThreshold_KPD
+./sinWaveChannel/Config:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./sinWaveChannel/Config:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./sinWaveChannel/Config:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson
+./sinWaveChannel/.svn/text-base/Config.svn-base:8:REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+./sinWaveChannel/.svn/text-base/Config.svn-base:14:REQUIRES physics/IncompNS/IncompNSMain/vardens
+./sinWaveChannel/.svn/text-base/Config.svn-base:21:  REQUESTS Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson

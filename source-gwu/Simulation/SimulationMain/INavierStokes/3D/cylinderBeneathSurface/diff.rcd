@@ -1,0 +1,577 @@
+diff ./Config ../cylinderBeneathSurface_SolidMech/Config
+6c6
+< REQUIRES physics/IncompNS/IncompNSMain/vardens
+---
+> REQUIRES physics/IncompNS/IncompNSMain/vardens_SBM
+10a11,12
+> REQUIRES physics/ImBound/ImBoundMain/LagForce/parallel/forceInBody_analytical
+> REQUIRES physics/ImBound/ImBoundMain/LagForce/parallel/vardens
+13,14d14
+< #REQUIRES Simulation/SimulationMain/INavierStokes/2D/Tecplot2D_VD
+< #REQUIRES Simulation/SimulationMain/INavierStokes/3D/Tecplot3D
+16a17,27
+> # Solid Mechanics:
+> REQUIRES physics/SolidMechanics/SolidMechanicsMain/
+> REQUIRES physics/SolidMechanics/SolidMechanicsMain/Assembly/rigid
+> REQUIRES physics/SolidMechanics/SolidMechanicsMain/IO/rigid
+> 
+> DATAFILES kinematics.input.h5
+> DATAFILES sm_body.00001.h5
+> DATAFILES sm_body.00002.h5
+> DATAFILES sm_body.00003.h5
+> DATAFILES sm_body.00004.h5
+> 
+18,19c29
+< #   REQUESTS Grid/GridSolvers/Pfft/DirectSolver/Generic_Direct
+<    REQUESTS Grid/GridSolvers/Pfft/HomBcTrigSolver
+---
+>   REQUESTS Grid/GridSolvers/Pfft/HomBcTrigSolver
+21,23c31
+<    REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+< ###   REQUESTS Grid/GridSolvers/BiPCGStab/poisson/PrecondMultigrid
+< 
+---
+>   REQUIRES Simulation/SimulationMain/INavierStokes/paramesh_routines/vardens_MG
+47,50d54
+< DATAFILES splashCyl_y0.surf 
+< #DATAFILES splashCyl_y0_wCaps.tri 
+< #DATAFILES splashCyl_y0_wCaps.surf 
+< #DATAFILES splashCyl_coarse_fine_hd40.surf 
+Only in ../cylinderBeneathSurface_SolidMech: cylinderFS_SBM.sh
+diff ./cylinderFS.sh ../cylinderBeneathSurface_SolidMech/cylinderFS.sh
+1c1
+< ./setup INavierStokes/3D/cylinderBeneathSurface/  -3d -auto -opt -nxb=16 -nyb=16 -nzb=16 -maxblocks=50 -gridinterpolation=native +pm4dev -objdir=CYL_3d_wFS_8_OPT -site=splash.seas.gwu.edu_KPD Bittree=1
+---
+> ./setup INavierStokes/3D/cylinderBeneathSurface_SolidMech/  -3d -auto -debug -nxb=8 -nyb=8 -nzb=8 -maxblocks=250 -gridinterpolation=native +pm4dev -objdir=CYL_3d_wFS_8_OPT -site=SEAS10927.gwu.edu Bittree=1 -noclobber
+Only in .: diff.rcd
+diff ./Driver_evolveFlash.F90 ../cylinderBeneathSurface_SolidMech/Driver_evolveFlash.F90
+27c27,29
+< #define DEDUG_ALL
+---
+> !!#define DEDUG_ALL
+> 
+> #define WRITE_TO_TECPLOT 1
+61,62d62
+< !  use MHD_interface,     ONLY : MHD
+< !  use Gravity_interface, ONLY :  Gravity_potentialListOfBlocks
+64a65
+> #ifdef WRITE_TO_TECPLOT
+65a67
+> #endif
+67,70c69,70
+< !  use Cosmology_interface, ONLY:  Cosmology
+< 
+<   !use ins_interface, only  :  ins_velomg2center, &
+<   use ins_interface, only  :  ins_divergence, &
+---
+>   use ins_interface, only  :  ins_velomg2center, &
+>                               ins_divergence, &
+80a81,86
+>   use sm_Misc_interface, only: sm_get_NumBodies
+>   use sm_iointerface, only: sm_ioWriteSnapshot,sm_ioWriteParticles, &
+>                             sm_ioWriteStates, sm_iouttotecplot
+>   use SolidMechanics_Data, only : sm_meshMe,sm_meshComm,sm_BodyInfo
+> 
+> 
+104c110
+<   integer :: i,ibd
+---
+>   integer :: i,ibd,NumBodies
+132c138,144
+<   dr_dtOld = dr_dt
+---
+> !!KPD  dr_dtOld = dr_dt
+> !  if (dr_restart .eqv. .TRUE.) then
+> !     dr_dtOld = 8888.8888
+>      dr_dtOld = 8888.8888
+> !  else
+> !     dr_dtOld = dr_dt
+> !  end if
+140c152
+<   if (gr_meshMe .eq. MASTER_PE) write(*,*) 'dr_dt ===',dr_dt,count
+---
+>   !if (gr_meshMe .eq. MASTER_PE) write(*,*) 'dr_dt ===',dr_dt,count
+142a155,156
+> 
+> #ifdef WRITE_TO_TECPLOT
+144,145c158,160
+<   firstfileflag = 0 ! io_plotFileNumber
+< !  dr_nstep = 0
+---
+>   if (.not. dr_restart) then
+>   firstfileflag = 0
+>   dr_nstep = 0
+148,198c163
+< !  call outtotecplot_uv(dr_globalMe,dr_simtime,dr_dt,dr_nstep,count, &
+< !                     0.0,blockList,blockCount,firstfileflag)
+< 
+< !----------------------------------------------------------------------------
+< !----------------------------------------------------------------------------
+< !----------------------------------------------------------------------------
+< 
+<      if (gr_meshMe .eq. MASTER_PE) then
+<      open(unit=113,file='./IOData/geo'//'9999'//'.plt',form='formatted')
+< !     write(113,'(A,G12.5,A)')'TEXT X=75,Y=5,F=HELV-BOLD,C=RED,T=" T =',dr_simTime,'"'
+<      close(113)
+<      endif
+< 
+<      call MPI_BARRIER(gr_meshComm,ierr)
+< 
+<      do ibd=1,gr_sbNumBodies
+< 
+<         if (gr_sbBodyInfo(ibd)%myPE .eq. gr_sbBodyInfo(ibd)%BodyMaster)then
+< 
+< 
+<         open(unit=113,file='./IOData/geo'//'9999'//'.plt',form='formatted', &
+<              status='old',position='append')
+< 
+< !        call int2char(ibd,index_ibd)
+<         write(113,'(A)') 'VARIABLES = "X" , "Y", "Z"'
+<         write(113,'(2(A,I8),A)')                 &
+<         'ZONE T=Body'//'9999'//', N=',              &
+<         gr_sbBodyInfo(ibd)%NumVertices,', E=',gr_sbBodyInfo(ibd)%NumAelem,        &
+<         ',DATAPACKING = POINT, ZONETYPE = FETRIANGLE'
+< 
+<         do i = 1,gr_sbBodyInfo(ibd)%NumVertices
+<            write(113,'(2E16.8)') gr_sbBodyInfo(ibd)%xb(i),gr_sbBodyInfo(ibd)%yb(i),gr_sbBodyInfo(ibd)%zb(i)
+<         enddo
+< 
+<         write(113,'(A)') ' '
+<         Do i=1,gr_sbBodyInfo(ibd)%NumAelem
+<            write(113,'(3(I8))')                        &
+<                   gr_sbBodyInfo(ibd)%AELEM(2,i),            &
+<                   gr_sbBodyInfo(ibd)%AELEM(3,i),gr_sbBodyInfo(ibd)%AELEM(4,i)
+<         enddo
+< 
+<         close(113)
+< 
+<         end if
+< 
+<      enddo
+< 
+< !----------------------------------------------------------------------------
+< !----------------------------------------------------------------------------
+< !----------------------------------------------------------------------------
+< 
+---
+>   endif
+200,201c165,166
+< !print*,"Calling gr_sbFinalize from Driver_evolveFlash"
+< !  call gr_sbFinalize() !Added PM
+---
+> #endif
+> 
+243,249c208,214
+< !!$     call Timers_start("sourceTerms")
+< !!$     call Driver_sourceTerms(blockCount, blockList, dr_dt)
+< !!$     call Timers_stop("sourceTerms")
+< !!$#ifdef DEBUG_DRIVER
+< !!$     print*,'done source terms'
+< !!$     print*, 'return from Drivers_sourceTerms '
+< !!$#endif
+---
+>      call Timers_start("sourceTerms")
+>      call Driver_sourceTerms(blockCount, blockList, dr_dt)
+>      call Timers_stop("sourceTerms")
+> #ifdef DEBUG_DRIVER
+>      print*,'done source terms'
+>      print*, 'return from Drivers_sourceTerms '
+> #endif
+256,259c221,224
+< !!$     call Gravity_potentialListOfBlocks(blockCount,blockList)
+< !!$#ifdef DEBUG_DRIVER
+< !!$     print*, 'return from Gravity_potential '
+< !!$#endif
+---
+>      call Gravity_potentialListOfBlocks(blockCount,blockList)
+> #ifdef DEBUG_DRIVER
+>      print*, 'return from Gravity_potential '
+> #endif
+272c237
+< 
+---
+> #ifdef WRITE_TO_TECPLOT
+287,294c252,269
+<      count = count + 1
+< 
+< 
+<      call outtotecplot(dr_globalMe,dr_simtime,dr_dt,dr_nstep,count, &
+<                        0.0,blockList,blockCount,firstfileflag)
+< !     call outtotecplot_uv(dr_globalMe,dr_simtime,dr_dt,dr_nstep,count, &
+< !                       0.0,blockList,blockCount,firstfileflag)
+< 
+---
+>         ! Write to Grid to Tecplot:
+>         count = count + 1
+>         call outtotecplot(dr_globalMe,dr_simtime,dr_dt,dr_nstep,count, &
+>                           0.0,blockList,blockCount,firstfileflag)
+> 
+>         ! Here call write out Solid Stuff
+>         ! Write to Bodies to Tecplot:
+>         call sm_iouttotecplot(dr_nstep,dr_simtime,dr_dt,count)
+> 
+>         ! Write to Snapshot
+>         call sm_get_NumBodies(NumBodies)
+>         do ibd = 1,NumBodies
+>            if (sm_meshMe .eq. sm_BodyInfo(ibd)%BodyMaster)then
+>               call sm_ioWriteSnapshot(ibd,count)
+>               ! Here we write particles
+>               call sm_ioWriteParticles(ibd,count)
+>            endif
+>         end do
+296,339c271
+<      if (gr_meshMe .eq. MASTER_PE) then 
+< !     call int2char(count,index_count)
+<      open(unit=113,file='./IOData/geo'//'1234'//'.plt',form='formatted')
+<      write(113,'(A,G12.5,A)')'TEXT X=75,Y=5,F=HELV-BOLD,C=RED,T=" T =',dr_simTime,'"'
+<      close(113)
+<      endif
+< 
+<      call MPI_BARRIER(gr_meshComm,ierr) 
+< 
+<      do ibd=1,gr_sbNumBodies
+<  
+<         if (gr_sbBodyInfo(ibd)%myPE .eq. gr_sbBodyInfo(ibd)%BodyMaster)then                
+<  
+<         open(unit=113,file='./IOData/geo'//'1234'//'.plt',form='formatted', &
+<              status='old',position='append')
+< 
+< !        call int2char(ibd,index_ibd)
+<         write(113,'(A)') 'VARIABLES = "X" , "Y", "Z"'
+<         write(113,'(2(A,I8),A)')                 &
+<         'ZONE T=Body'//index_ibd//', N=',              &
+<         gr_sbBodyInfo(ibd)%NumVertices,', E=',gr_sbBodyInfo(ibd)%NumAelem,        &
+<         ',DATAPACKING = POINT, ZONETYPE = FETRIANGLE'
+< 
+<         do i = 1,gr_sbBodyInfo(ibd)%NumVertices
+<            write(113,'(2E16.8)') gr_sbBodyInfo(ibd)%xb(i),gr_sbBodyInfo(ibd)%yb(i),gr_sbBodyInfo(ibd)%zb(i)
+<         enddo
+< 
+<         write(113,'(A)') ' '
+<         Do i=1,gr_sbBodyInfo(ibd)%NumAelem
+<            write(113,'(3(I8))')                        &
+<                   gr_sbBodyInfo(ibd)%AELEM(2,i),            &
+<                   gr_sbBodyInfo(ibd)%AELEM(3,i),gr_sbBodyInfo(ibd)%AELEM(4,i)
+<         enddo
+< 
+<         close(113)
+< 
+<         endif
+< 
+<         call MPI_BARRIER(gr_meshComm,ierr)
+< 
+<      enddo
+<     
+< 
+<      if (count .gt. 0) firstfileflag = 1
+---
+>         if (count .gt. 0) firstfileflag = 1
+340a273
+> #endif
+341a275,276
+>      ! Write SolidMechanics States defined by user:
+>      call sm_ioWriteStates()
+343,344c278,279
+<      !! Average Velocities and Vorticity to cell-centers
+<      !call ins_velomg2center(blocklist,blockcount) 
+---
+>      ! Average Velocities and Vorticity to cell-centers
+>      call ins_velomg2center(blocklist,blockcount) 
+diff ./flash.par ../cylinderBeneathSurface_SolidMech/flash.par
+10,12d9
+< # Particles
+< pt_maxPerProc=100000
+< 
+38,40c35,39
+< dampC = 0.1
+< 
+< cylDepth = -0.9
+---
+> dampC = 0.5
+> xDampL = -7.0
+> xDampR = 14.5
+> yDampL = 0.0 
+> zDampL = 0.0
+49a49,52
+> # Bodies:
+> sm_NumBodies   =  4
+> gr_sbNumBodies =  4
+> 
+52,57c55,66
+< xmin		= -11.00000000
+< xmax		=  17.0000000000
+< ymin		= -6.00000000000000
+< ymax		=  2.00000000000000
+< zmin		= -2.00000000000
+< zmax		=  2.000000000000
+---
+> #xmin		= -11.00000000
+> #xmax		=  17.0000000000
+> #ymin		= -6.00000000000000
+> #ymax		=  2.00000000000000
+> #zmin		= -2.00000000000
+> #zmax		=  2.000000000000
+> xmin            = -11.0000007
+> xmax            =  17.0000007
+> ymin            =  -6.0000002
+> ymax            =   2.0000002
+> zmin            =  -2.0000001
+> zmax            =   2.0000001
+86,87c95,96
+< cfl             = 0.05
+< sigma		= 0.05
+---
+> cfl             = 0.1
+> sigma		= 0.1
+92a102,105
+> # SolidMechanics Integration method
+> sm_solidinteg = 2
+> pcepsilon= 1.e-7
+> 
+104c117
+< checkpointFileIntervalStep =1500
+---
+> checkpointFileIntervalStep =500
+107c120
+< plotFileIntervalStep = 1500
+---
+> plotFileIntervalStep = 500
+115,116c128,129
+< lrefine_min	= 3
+< lrefine_max     = 5
+---
+> lrefine_min	= 2
+> lrefine_max     = 4
+119c132
+< nrefs           = 1000000
+---
+> nrefs           = 100
+Only in ../cylinderBeneathSurface_SolidMech: garnetCylinders
+diff ./Grid_markRefineDerefine.F90 ../cylinderBeneathSurface_SolidMech/Grid_markRefineDerefine.F90
+38c38,39
+<                         gr_numRefineVars,gr_refine_var
+---
+>                         gr_numRefineVars,gr_refine_var, gr_meshComm
+> 
+47a49
+> #include "Flash_mpi.h"
+50a53
+>   integer :: ierr
+57c60,68
+<   integer :: lref,specsSize
+---
+>   real, dimension(7) :: specsA
+>   real, dimension(7) :: specsB
+>   real, dimension(7) :: specsC
+>   real, dimension(7) :: specsD
+>   real, dimension(3) :: specs2
+>   real, dimension(6) :: specs4
+>   real, dimension(4) :: specs3
+>   integer :: lref,specsSize, specsSize2, specsSize3,specsSize4
+>   integer :: specsSizeA, specsSizeB, specsSizeC,specsSizeD
+67,74d77
+< ! do l = 1,gr_numRefineVars
+< !     iref = gr_refine_var(l)
+< !     ref_cut = gr_refine_cutoff(l)
+< !     deref_cut = gr_derefine_cutoff(l)
+< !     ref_filter = gr_refine_filter(l)
+< !     call gr_markRefineDerefine(iref,ref_cut,deref_cut,ref_filter)
+< ! end do
+< 
+76a80,92
+> !!#ifdef SPECIAL_REFINEMENT
+> !!  specsSizeC=3
+> !!  specsC(1) = real(OMGZ_VAR)
+> !!  specsC(2) =   3.0
+> !!  specsC(3) =  -3.0
+> !!
+> !!  !lref = lrefine_max-2
+> !!  !lref = lrefine_max-1
+> !!!  lref = 4!lrefine_max
+> !!  lref = 5!lrefine_max
+> !!
+> !!  call Grid_markRefineSpecialized_KPD (VORTICITY,specsSizeC,specsC,lref)
+> !!#endif
+79,101c95,103
+<   !! Call for the specialized refinement
+<   specsSize=7
+<   !! Coordinate information --------------------------------------
+<   !! define a range of coordinates of the rectangle in x-direction
+<   specs(1) =  -100. 
+<   specs(2) =   100.  
+< 
+<   !! define a range of coordinates of the rectangle in y-direction
+<   specs(3) =  -.5 
+<   specs(4) =   .5 
+< 
+<   !! define a range of coordinates of the rectangle in z-direction
+<   specs(5) =  -100. 
+<   specs(6) =  100. 
+<   !! End of coordinate information -------------------------------
+< 
+<   !! Decide wheather or not we refine only blocks completely 
+<   !! contained within the rectangle (specs(7) .NE. 0.0)
+<   !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+<   specs(7) = 0.0
+< 
+<   !! Bring all qualifying blocks to this level of refinement
+<   lref = lrefine_max
+---
+>   specsSizeC=3
+>   specsC(1) = real(OMGZ_VAR)
+>   specsC(2) =   4.0
+>   specsC(3) =  -4.0
+> 
+>   !lref = lrefine_max-2
+>   !lref = lrefine_max-1
+> !  lref = 4!lrefine_max
+>   lref = 5!lrefine_max
+103c105
+<   call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+---
+>   call Grid_markRefineSpecialized_KPD (VORTwLS,specsSizeC,specsC,lref)
+105a108
+>      call MPI_BARRIER(gr_meshComm,ierr)
+108,127c111,119
+<   !! Call for the specialized refinement
+<   specsSize=7
+<   !! Coordinate information --------------------------------------
+<   !! define a range of coordinates of the rectangle in x-direction
+<   specs(1) =  -1.0 
+<   specs(2) =   1.0 
+< 
+<   !! define a range of coordinates of the rectangle in y-direction
+<   specs(3) =  -2.0  
+<   specs(4) =   0.0  
+< 
+<   !! define a range of coordinates of the rectangle in z-direction
+<   specs(5) =  -100.0 
+<   specs(6) =   100.0 
+<   !! End of coordinate information -------------------------------
+< 
+<   !! Decide wheather or not we refine only blocks completely 
+<   !! contained within the rectangle (specs(7) .NE. 0.0)
+<   !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+<   specs(7) = 0.0
+---
+>   specsSize2=3
+>   specs2(1) =  real(DFUN_VAR)
+>   specs2(2) =  -0.1
+>   specs2(3) =   0.1
+>   lref = 6!lrefine_max-2
+>   !lref = lrefine_max-1
+>   !lref = lrefine_max
+>   call Grid_markRefineSpecialized_KPD (THRESHOLD,specsSize2,specs2,lref)
+> #endif
+129c121
+<   !write(*,*) 'Specs=',specs(1:7)
+---
+>      call MPI_BARRIER(gr_meshComm,ierr)
+131c123,128
+<   !! Bring all qualifying blocks to this level of refinement
+---
+> #ifdef SPECIAL_REFINEMENT
+>   specsSizeA=7
+>   specsA(1) = 0.0
+>   specsA(2) =-0.90
+>   specsA(3) = 0.0
+>   specsA(4) = 0.49
+133,134c130
+< 
+<   call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+---
+>   call Grid_markRefineSpecialized (WITHRADIUS,specsSizeA,specsA,lref)
+136a133,141
+> #ifdef SPECIAL_REFINEMENT
+>   specsSizeA=7
+>   specsA(1) = 0.0
+>   specsA(2) =-0.90
+>   specsA(3) = 0.0
+>   specsA(4) = 0.50
+>   lref = lrefine_max
+>   call Grid_markRefineSpecialized (WITHRADIUS,specsSizeA,specsA,lref)
+> #endif
+138,140c143,151
+< 
+< 
+< 
+---
+> #ifdef SPECIAL_REFINEMENT
+>   specsSizeA=7
+>   specsA(1) = 0.0
+>   specsA(2) =-0.90
+>   specsA(3) = 0.0
+>   specsA(4) = 0.52
+>   lref = lrefine_max
+>   call Grid_markRefineSpecialized (WITHRADIUS,specsSizeA,specsA,lref)
+> #endif
+Only in ../cylinderBeneathSurface_SolidMech: Grid_markRefineDerefine.F90.lref4
+Only in ../cylinderBeneathSurface_SolidMech: Grid_markRefineDerefine.F90.lref5
+Only in ../cylinderBeneathSurface_SolidMech: Grid_markRefineDerefine.F90.lref6
+Only in ../cylinderBeneathSurface_SolidMech: Grid_markRefineDerefine.F90.lref7
+Only in ../cylinderBeneathSurface_SolidMech: Grid_markRefineDerefine.F90.lref7alt
+Only in .: gr_sbInit.F90
+Only in .: Ib_Parallel_Bvp_HYPRE_VD_3d_wFS_OPT.sh
+Only in .: ImBound_init.F90
+Only in .: INOUT_Cyl_pm.sh
+Only in .: ins_ab2rk3_WithIForcing_SPHERE.F90
+Only in ../cylinderBeneathSurface_SolidMech: kinematics.input.h5
+diff ./outtotecplot.F90 ../cylinderBeneathSurface_SolidMech/outtotecplot.F90
+33c33,34
+<   character(27) :: filename
+---
+>   !character(27) :: filename
+>   character(29) :: filename
+52c53
+<             Sxy,Syz,Sxz,Oxy,Oyz,Oxz,Qcr,divpp,TVtpp
+---
+>             Sxy,Syz,Sxz,Oxy,Oyz,Oxz,Qcr,divpp,TVtpp,omgz
+133c134
+<   write(filename,'("./IOData/data.",i4.4,".",i4.4,".plt")') &
+---
+>   write(filename,'("./IOData/data.",i4.4,".",i6.6,".plt")') &
+172a174,176
+> !KPD
+> if ( (ABS(boundBox(1,3)) .LT. 0.05) .OR. (ABS(boundBox(2,3)) .LT. 0.05)) then
+> 
+292a297,299
+>      call centervals2corners(NGUARD,NXB,NYB,NZB,nxc,nyc,nzc,&
+>                              solnData(OMGZ_VAR,:,:,:),omgz)
+> 
+450c457
+<      ! Write TV... KPD - DFUN:
+---
+>      ! Write TV:
+482c489,491
+<      arraylb = sngl(Qcr)
+---
+>      !arraylb = sngl(Qcr)
+>      !i = TecDat(ijk,arraylb,0)
+>      arraylb = sngl(omgz)
+489c498
+< !     ! Write TV... KPD - DFUN:
+---
+> !     ! Write TV:
+501a511,518
+>         ! Release pointers:
+>         call Grid_releaseBlkPtr(blockID,solnData,CENTER)
+>         call Grid_releaseBlkPtr(blockID,facexData,FACEX)
+>         call Grid_releaseBlkPtr(blockID,faceyData,FACEY)
+>         call Grid_releaseBlkPtr(blockID,facezData,FACEZ)
+> 
+> !KPD
+> end if
+Only in .: outtotecplot.F90.LargeCenter
+Only in ../cylinderBeneathSurface_SolidMech: sm_body.00001.h5
+Only in ../cylinderBeneathSurface_SolidMech: sm_body.00002.h5
+Only in ../cylinderBeneathSurface_SolidMech: sm_body.00003.h5
+Only in ../cylinderBeneathSurface_SolidMech: sm_body.00004.h5
+Only in .: splashCyl_coarse_fine_hd40.surf
+Only in .: splashCyl_coarse_fine_hd40.surf.ORIG
+Only in .: splashCyl_y0.surf
+Only in .: splashCyl_y0.surf.ORIG
+Only in .: splashCyl_y0_wCaps.surf
+Only in .: splashCyl_y0_wCaps.surf.ORIG
+Only in .: splashCyl_y0_wCaps.tri
+Only in .: splashCyl_y0_wCaps.tri.ORIG
+Common subdirectories: ./.svn and ../cylinderBeneathSurface_SolidMech/.svn

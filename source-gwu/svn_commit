@@ -1,0 +1,74 @@
+svn ci -m "Shizhao set the maximum iteration steps"    \
+  physics/SolidMechanics/SolidMechanicsMain/Solvers/sm_integ_checkconverg.F90
+
+svn ci -m "Shizhao forced the status to be CONVERGED when the maximum iteration is reached" \
+  physics/SolidMechanics/SolidMechanicsMain/Solvers/PredCorr/sm_PredCorr_checkconverg.F90
+
+svn ci -m "Shizhao Wang defined a new CONSTANT to force the FSI to be CONVERGED when the maximum iteration is reached" \
+  physics/SolidMechanics/SolidMechanics.h
+  
+svn ci -m "This subroutine causes a problem in 2D free surface flows, Shizhao" \ 
+  physics/IncompNS/IncompNSMain/vardens/ins_vt_WALE.F90
+
+ svn ci -m "The variable Fn is not used in this routine, and causes a problem when gravity is zero. Shizhao" \
+   physics/Multiphase/MultiphaseMain/mph_KPDadvectWENO3.F90
+
+ svn ci -m "Shizhao turn off the default defination of ITER_FORCING to save time." \
+   physics/ImBound/ImBoundMain/LagForce/Extras/gr_sbUpdateForces.F90
+ 
+ svn ci -m "Shizhao provided a new model for distributed forces" \
+   physics/ImBound/ImBoundMain/LagForce/parallel/ib_distributedForces.F90
+
+ svn ci -m "Shizhao removed a bug in subroutine ib_forceInsiderBody" \
+   physics/ImBound/ImBoundMain/LagForce/parallel/forceInBody_analytical/ib_forceInsideBody.F90
+
+ svn ci -m "Shizhao removed the varible FORO to save memeory space. The iterative forcing is not used by default" \
+   physics/ImBound/ImBoundMain/LagForce/parallel/Config
+
+ svn ci -m "Shizhao added two variables to remove compiling error for 2D flows" \
+   Simulation/SimulationMain/INavierStokes/2D/freeSurfaceChannel/Simulation_data.F90
+
+ svn ci -m "Shizhao updated the file index to allow using up to 10^6 cores" \
+   Simulation/SimulationMain/INavierStokes/2D/Tecplot2D/outtotecplot.F90
+
+ svn ci -m "Shizhao update the output of pressure" \ 
+   Simulation/SimulationMain/INavierStokes/2D/Tecplot2D/outtotecplot_uv.F90
+
+ svn ci -m "Shizhao marked a possible bug" \
+   Grid/GridMain/paramesh/paramesh4/Grid_fillGuardCells.F90
+
+ svn ci -m "Shizhao marked a question. It seems not a bug." \
+   Grid/GridMain/UG/Grid_fillGuardCells.F90
+ 
+ svn ci -m "Shizhao marked possible bug." \ 
+   Grid/GridParticles/GridParticlesMove/UG/Directional/VirtualParticles/gr_ptMoveOffProc.F90
+
+ svn ci -m "Shizhao removed the un-used MGW9. This is nesssary to keep the VARAIABLE less than 10 for levlel set + IB method" \
+   Grid/GridSolvers/MultigridMC_VarDens_HYPRE/poisson/Config
+
+svn ci -m "Shizhao reposited the body center in flows with periodic BCs" \
+  physics/SolidMechanics/SolidMechanicsMain/SurfaceInteraction/sm_surf_assembleFluidForce_toPoint.F90
+
+svn ci -m "Shizhao added the routine to compute repulsive forces between particles" \
+  physics/SolidMechanics/SolidMechanicsMain/Assembly/Makefile
+
+svn add \
+  physics/SolidMechanics/SolidMechanicsMain/Assembly/rigid/sm_assemble_repulForce_rigid.F90
+
+svn ci -m "Shizhao added the routines to set the collision model and get the mass centers of particles" \
+  physics/SolidMechanics/SolidMechanicsMain/Contact/Makefile 
+
+svn add \
+  physics/SolidMechanics/SolidMechanicsMain/Contact/sm_gatherMassCent.F90 
+
+svn add \
+  physics/SolidMechanics/SolidMechanicsMain/Contact/sm_set_cm_para.F90 
+
+svn ci -m "Shizhao added the initialization of collision models for the flows with more than two particles" \
+  physics/SolidMechanics/SolidMechanicsMain/SolidMechanics_init.F90
+
+svn ci -m "Shizhao added the variables for collision models" \
+  physics/SolidMechanics/SolidMechanicsMain/SolidMechanics_data.F90
+
+svn ci -m "Shizhao removed a bug in dealing with particles acrossing boundaries" \
+  physics/SolidMechanics/SolidMechanicsMain/IO/sm_iouttotecplot.F90 

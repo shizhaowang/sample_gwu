@@ -1,0 +1,272 @@
+diff ./bhaga_2d.sh ../bhagaWeber_mcHYPRE_Sussman/bhaga_2d.sh
+1c1
+< ./setup INavierStokes/2D/bhagaWeber_mcHYPRE_PERIODIC  -2d -auto  -nxb=8 -nyb=8 -debug  -maxblocks=100 -gridinterpolation=native +pm4dev  -objdir=BHAGA_2d_8_DEBUG -site=SEAS10926.gwu.edu -noclobber  
+---
+> ./setup INavierStokes/2D/bhagaWeber_mcHYPRE  -2d -auto  -nxb=16 -nyb=16 -opt  -maxblocks=2000 -gridinterpolation=native +pm4dev  -objdir=BHAGA_2d_16_OPT -site=splash.seas.gwu.edu_KPD -noclobber  
+Only in ../bhagaWeber_mcHYPRE_Sussman/: bhagaWeber_HYPRE_3d.sh
+Only in .: diff.rcd
+diff ./Driver_evolveFlash.F90 ../bhagaWeber_mcHYPRE_Sussman/Driver_evolveFlash.F90
+79d78
+< 
+84d82
+< if (dr_nstep .eq. 1) gridChanged = .TRUE.
+218d215
+< print*,"After Grid_updateRefinement",gridChanged,grid_changed
+diff ./flash.par ../bhagaWeber_mcHYPRE_Sussman/flash.par
+7c7
+< dtinit=1.0
+---
+> dtinit=2.0e-5
+11c11
+< invRe           = .10
+---
+> invRe           = .010
+21,24c21,24
+< xmin            =  -2.0000000000000
+< xmax            =  2.0
+< ymin            =  -1.000000000000
+< ymax            =  7.0
+---
+> xmin            =  -3.0000000000000
+> xmax            =  3.0
+> ymin            =  -3.000000000000
+> ymax            =  3.0
+29c29
+< rho2  = 50.0
+---
+> rho2  = 1000.0
+33c33
+< vis2 = 1.0
+---
+> vis2 = 100.0
+36c36
+< sten = 1.0
+---
+> sten = 0.005
+44c44
+< lsit = 5
+---
+> lsit = 4
+48,56c48,58
+< #xl_boundary_type = "slip_ins"
+< #xr_boundary_type = "slip_ins"
+< #yl_boundary_type = "slip_ins"
+< #yr_boundary_type = "slip_ins"
+< 
+< xl_boundary_type = "periodic"
+< xr_boundary_type = "periodic"
+< yl_boundary_type = "periodic"
+< yr_boundary_type = "periodic"
+---
+> xl_boundary_type = "slip_ins"
+> xr_boundary_type = "slip_ins"
+> yl_boundary_type = "slip_ins"
+> yr_boundary_type = "slip_ins"
+> 
+> #xl_boundary_type = "periodic"
+> #xr_boundary_type = "periodic"
+> #yl_boundary_type = "periodic"
+> #yr_boundary_type = "periodic"
+> #zl_boundary_type = "periodic"
+> #zr_boundary_type = "periodic"
+65,66c67,68
+< nend            = 5000
+< tmax            = 3. 
+---
+> nend            = 1000
+> tmax            = 30. 
+79,80c81,82
+< checkpointFileIntervalTime = 5.
+< checkpointFileIntervalStep = 1000
+---
+> checkpointFileIntervalTime = 1.
+> checkpointFileIntervalStep = 50
+85c87
+< nblocky	= 2
+---
+> nblocky	= 1
+87,90c89,92
+< lrefine_min	= 3
+< lrefine_max     = 4
+< mgrid_solveLevelKPD = 3
+< nrefs           = 500
+---
+> lrefine_min	= 1
+> lrefine_max     = 1
+> mgrid_solveLevelKPD = 1
+> nrefs           = 1000
+96,97c98,99
+< mgrid_npresmooth = 2
+< mgrid_nposmooth  = 8
+---
+> mgrid_npresmooth = 1
+> mgrid_npossmooth  = 2
+112,113c114,115
+< #gr_hypreRelTol          = 1.0e-10
+< gr_hypreRelTol          = 1.0e-6
+---
+> gr_hypreRelTol          = 1.0e-10
+> #gr_hypreRelTol          = 1.0e-6
+Only in ../bhagaWeber_mcHYPRE_Sussman/: flash_pm.par
+Only in ../bhagaWeber_mcHYPRE_Sussman/: flash_ug.par
+diff ./Grid_markRefineDerefine.F90 ../bhagaWeber_mcHYPRE_Sussman/Grid_markRefineDerefine.F90
+56c56,57
+<   real, dimension(3) :: specs
+---
+>   !real, dimension(3) :: specs
+>   real, dimension(7) :: specs
+78,137c79,99
+< !!$#ifdef SPECIAL_REFINEMENT
+< !!$  !! Call for the specialized refinement
+< !!$  specsSize=7
+< !!$  !! Coordinate information --------------------------------------
+< !!$  !! define a range of coordinates of the rectangle in x-direction
+< !!$  specs(1) =  sim_xMin + 1./4.*(sim_xMax - sim_xMin) +.005
+< !!$  specs(2) =  sim_xMin + 3./4.*(sim_xMax - sim_xMin) -.005
+< !!$
+< !!$  !! define a range of coordinates of the rectangle in y-direction
+< !!$  specs(3) =  sim_yMin + 1./4.*(sim_yMax - sim_yMin) +.005
+< !!$  specs(4) =  sim_yMin + 3./4.*(sim_yMax - sim_yMin) -.005
+< !!$
+< !!$  !! define a range of coordinates of the rectangle in z-direction
+< !!$  specs(5) =  0. !sim_zMin + 1./4.*(sim_zMax - sim_zMin) +.005
+< !!$  specs(6) =  0. !sim_zMin + 3./4.*(sim_zMax - sim_zMin) -.005
+< !!$  !! End of coordinate information -------------------------------
+< !!$
+< !!$  !! Decide wheather or not we refine only blocks completely 
+< !!$  !! contained within the rectangle (specs(7) .NE. 0.0)
+< !!$  !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+< !!$  specs(7) = 0.0
+< !!$
+< !!$  !write(*,*) 'Specs=',specs(1:7)
+< !!$
+< !!$  !! Bring all qualifying blocks to this level of refinement
+< !!$  lref = lrefine_max
+< !!$
+< !!$  call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+< !!$#endif
+< !!$
+< !!$
+< !!$#ifdef SPECIAL_REFINEMENT ! Quadrant II
+< !!$  !! Call for the specialized refinement
+< !!$  specsSize=7
+< !!$  !! Coordinate information --------------------------------------
+< !!$  !! define a range of coordinates of the rectangle in x-direction
+< !!$  specs(1) =  sim_xMin +.005
+< !!$  specs(2) =  sim_xMin + 2./4.*(sim_xMax - sim_xMin) -.005
+< !!$
+< !!$  !! define a range of coordinates of the rectangle in y-direction
+< !!$  specs(3) =  sim_yMin + 2./4.*(sim_yMax - sim_yMin) +.005
+< !!$  specs(4) =  sim_yMax -.005
+< !!$
+< !!$  !! define a range of coordinates of the rectangle in z-direction
+< !!$  specs(5) =  0. !sim_zMin + 1./4.*(sim_zMax - sim_zMin) +.05
+< !!$  specs(6) =  0. !sim_zMin + 3./4.*(sim_zMax - sim_zMin) -.05
+< !!$  !! End of coordinate information -------------------------------
+< !!$
+< !!$  !! Decide wheather or not we refine only blocks completely 
+< !!$  !! contained within the rectangle (specs(7) .NE. 0.0)
+< !!$  !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+< !!$  specs(7) = 0.0
+< !!$
+< !!$  !write(*,*) 'Specs=',specs(1:7)
+< !!$
+< !!$  !! Bring all qualifying blocks to this level of refinement
+< !!$  lref = lrefine_max
+< !!$
+< !!$  call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+< !!$#endif
+---
+> !#ifdef SPECIAL_REFINEMENT
+> !!
+> !  specsSize=7
+> !
+> !  specs(1) =  -1000.0
+> !  specs(2) =  -0.45
+> !  specs(3) =  -1000.0 
+> !  specs(4) =   1000.0 
+> !  specs(5) =  0. 
+> !  specs(6) =  0. 
+> !
+> !  !! Decide wheather or not we refine only blocks completely 
+> !  !! contained within the rectangle (specs(7) .NE. 0.0)
+> !  !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+> !  specs(7) = 0.0
+> !
+> !  !! Bring all qualifying blocks to this level of refinement
+> !  lref = lrefine_max
+> !
+> !  call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+> !#endif
+139,142d100
+< #ifdef SPECIAL_REFINEMENT
+<   !! Call for the specialized refinement
+<   !!specsSize=7
+<   specsSize=3
+144,145c102
+<   !! Coordinate information --------------------------------------
+<   !! define a range of coordinates of the rectangle in x-direction
+---
+> #ifdef SPECIAL_REFINEMENT
+146a104
+>   specsSize=3
+149,167c107,108
+<   !specs(1) =  real(SIGP_VAR) 
+<   specs(2) =  -0.2 !sim_xMax -.005
+<   !specs(2) =  -0.026 !sim_xMax -.005
+< 
+<   !! define a range of coordinates of the rectangle in y-direction
+<   !specs(3) =  1.0 !sim_yMin +.005
+<   specs(3) =  0.2 !sim_yMin +.005
+< 
+<   !! define a range of coordinates of the rectangle in z-direction
+<   !!specs(5) =  0. !sim_zMin + 1./4.*(sim_zMax - sim_zMin) +.05
+<   !!specs(6) =  0. !sim_zMin + 3./4.*(sim_zMax - sim_zMin) -.05
+<   !! End of coordinate information -------------------------------
+< 
+<   !! Decide wheather or not we refine only blocks completely 
+<   !! contained within the rectangle (specs(7) .NE. 0.0)
+<   !! Otherwise, refine blocks with any overlap (specs(7) .EQ. 0.0)
+<   !!specs(7) = 0.0
+< 
+<   !write(*,*) 'Specs=',specs(1:7)
+---
+>   specs(2) =  -0.05 
+>   specs(3) =  0.05 !sim_yMin +.005
+169d109
+<   !! Bring all qualifying blocks to this level of refinement
+172d111
+<   !call Grid_markRefineSpecialized (RECTANGLE,specsSize,specs,lref)
+Only in ../bhagaWeber_mcHYPRE_Sussman/: ORIG_flash_pm.par
+diff ./outtotecplot.F90 ../bhagaWeber_mcHYPRE_Sussman/outtotecplot.F90
+130c130
+<   i = TecIni('AMR2D'//NULLCHR,'x y u v p denX denY dfun visc curv vort div'//NULLCHR,   &
+---
+>   i = TecIni('AMR2D'//NULLCHR,'x y u v dfun p denX denY visc curv vort div'//NULLCHR,   &
+301a302,305
+>       ! Write dfun:
+>       arraylb(:,:,1) = sngl(tpdfun)
+>       i = TecDat(ijk,arraylb,0)
+> 
+314,316c318,320
+<       ! Write dfun:
+<       arraylb(:,:,1) = sngl(tpdfun)
+<       i = TecDat(ijk,arraylb,0)
+---
+> !      ! Write dfun:
+> !      arraylb(:,:,1) = sngl(tpdfun)
+> !      i = TecDat(ijk,arraylb,0)
+Only in ../bhagaWeber_mcHYPRE_Sussman/: searchOrder.py
+diff ./Simulation_data.F90 ../bhagaWeber_mcHYPRE_Sussman/Simulation_data.F90
+24c24
+<   real, save    :: sim_xMin, sim_xMax, sim_yMin, sim_yMax
+---
+>   real, save    :: sim_xMin, sim_xMax, sim_yMin, sim_yMax, sim_zMin, sim_zMax
+diff ./Simulation_initBlock.F90 ../bhagaWeber_mcHYPRE_Sussman/Simulation_initBlock.F90
+86,87c86,87
+<   rdx = 0.5
+<   rdy = 0.5
+---
+>   rdx = 1.0
+>   rdy = 1.0
+Common subdirectories: ./.svn and ../bhagaWeber_mcHYPRE_Sussman/.svn

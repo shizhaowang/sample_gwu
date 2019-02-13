@@ -1,0 +1,4 @@
+#yhbatch -n 8 -p TH_SR1 -exclusive -J sphere_LES ./sub
+#yhbatch -n 24 -p TH_SR1 -x cn[2303-2304,4093]  -exclusive -J suboff_LES ./sub
+yhbatch -n 12 -p TH_SR1 -x cn[2303-2304,4093]  -exclusive -J fall_sph ./sub
+#yhbatch -n 12 -p debug -x cn[2303-2304,4093]  -exclusive -J fall_sph ./sub

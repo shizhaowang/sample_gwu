@@ -1,0 +1,370 @@
+Only in .: diff.rcd
+diff ./FallCyl_mult_pcc.sh ../FallCyl_mult_pcc_Uhlmann/FallCyl_mult_pcc.sh
+1c1
+< ./setup INavierStokes/2D/wangsz/FallCyl_mult_pcc/  -2d -auto -opt +ug -nxb=200 -nyb=150 -maxblocks=1 -gridinterpolation=native PfftSolver=HomBcTrigSolver  -objdir=FALLCYL_MULT_PCC -site=colonialone.gwu.edu
+---
+> ./setup INavierStokes/2D/wangsz/FallCyl_mult_pcc_Uhlmann/  -2d -auto -opt +ug -nxb=256 -nyb=256 -maxblocks=1 -gridinterpolation=native PfftSolver=HomBcTrigSolver  -objdir=FALLCYL_MULT_PCC_UHLMANNCASE -site=tianhe.tj.cn
+diff ./ib_distributedForces.F90 ../FallCyl_mult_pcc_Uhlmann/ib_distributedForces.F90
+31c31
+<   real, intent(IN), dimension(GRID_IHI_GC*K1D+1,GRID_JHI_GC*K2D+1,GRID_KHI_GC*K3D+1) :: vortx 
+---
+>   real, intent(IN), dimension(GRID_IHI_GC*K1D+1,GRID_JHI_GC*K2D+1,GRID_KHI_GC*K3D+1) :: vortx
+49c49
+<            RESHAPE( (/ 0., 0., 0.5, 0.5, 0., 0., 0., 0.5, 0. /), (/MDIM,MDIM /))  
+---
+>            RESHAPE( (/ 0., 0., 0.5, 0.5, 0., 0., 0., 0.5, 0. /), (/MDIM,MDIM /))
+104c104
+<   ue =0.; ve=0.; we=0.; 
+---
+>   ue =0.; ve=0.; we=0.;
+107c107
+<   dvdx=0.; dvdy=0.; dvdz=0.; 
+---
+>   dvdx=0.; dvdy=0.; dvdz=0.;
+160c160
+<   !h   = 0.5*(dsx+dsy) 
+---
+>   !h   = 0.5*(dsx+dsy)
+162c162
+<   eps = 1.E-2*MIN(dx,dy)  
+---
+>   eps = 1.E-2*MIN(dx,dy)
+170c170
+<              
+---
+> 
+184c184
+<   
+---
+> 
+186c186,190
+<   alpha = 2.0
+---
+> !  alpha = 2.0
+> !  alpha = 1.2
+> !  alpha = 1.5
+> !  alpha = 2.5
+>   alpha = 3.5
+210c214
+<   !h   = 0.5*(dsx+dsy) 
+---
+>   !h   = 0.5*(dsx+dsy)
+212c216
+<   eps = 1.E-2*MIN(dx,dy)  
+---
+>   eps = 1.E-2*MIN(dx,dy)
+219c223
+<              
+---
+> 
+260c264
+<         call ib_stencils(xbe,np,gridfl,del,coord,bsize,   & 
+---
+>         call ib_stencils(xbe,np,gridfl,del,coord,bsize,   &
+265c269
+<         xyz_stencil(1:ib_stencil,1:MDIM) = 0. 
+---
+>         xyz_stencil(1:ib_stencil,1:MDIM) = 0.
+268c272
+<                 real(ielem(1:ib_stencil,idim,presflag+1) - NGUARD - 1)*del(idim) + delaux(idim) 
+---
+>                 real(ielem(1:ib_stencil,idim,presflag+1) - NGUARD - 1)*del(idim) + delaux(idim)
+273c277
+<     
+---
+> 
+287c291
+<            ddpdzdz = 0. 
+---
+>            ddpdzdz = 0.
+290c294
+<            do i = 1 , ib_stencil      
+---
+>            do i = 1 , ib_stencil
+300c304
+<  
+---
+> 
+306c310
+<                                       ielem(i,KAXIS,presflag+1));  
+---
+>                                       ielem(i,KAXIS,presflag+1));
+338c342
+<  
+---
+> 
+344c348
+<                                       ielem(i,KAXIS,presflag+1)-1);  
+---
+>                                       ielem(i,KAXIS,presflag+1)-1);
+368c372
+<  
+---
+> 
+374c378
+<                                       ielem(i,KAXIS,presflag+1)+1);  
+---
+>                                       ielem(i,KAXIS,presflag+1)+1);
+394c398
+< #endif             
+---
+> #endif
+402c406
+<            dpdn = -(     ubdd*nxp +      vbdd*nyp +      wbdd*nzp) + & ! -rho*Du/Dt * n 
+---
+>            dpdn = -(     ubdd*nxp +      vbdd*nyp +      wbdd*nzp) + & ! -rho*Du/Dt * n
+496c500
+<               
+---
+> 
+532c536
+< #endif             
+---
+> #endif
+623c627
+<               
+---
+> 
+659c663
+< #endif             
+---
+> #endif
+666c670
+<            case(3) 
+---
+>            case(3)
+700c704
+<               
+---
+> 
+770c774
+<            
+---
+> 
+797c801
+<  
+---
+> 
+859a864,867
+>   dpdn = -(     ubdd*nxp +      vbdd*nyp +      wbdd*nzp) + & ! -rho*Du/Dt * n
+>             (ins_gravX*nxp + ins_gravY*nyp + ins_gravZ*nzp);    ! +rho*    g * n
+>   zL = zpres - dpdn*h;
+> 
+872c880
+<   enddo  
+---
+>   enddo
+884c892
+<   enddo  
+---
+>   enddo
+913c921,922
+<   particleData(PRES_PART_PROP) = zL2
+---
+>   !particleData(PRES_PART_PROP) = zL2
+>   particleData(PRES_PART_PROP) = zL
+918,919c927,928
+<   write(9800+gr_meshMe,'(10f20.12)') particleData(GLOB_PART_PROP), zL2, zL, zpres 
+<   write(9900+gr_meshMe,'(30f20.12)') particleData(GLOB_PART_PROP), zv(1), w_l(1), w_c(1), w_cc(1) 
+---
+>   write(9800+gr_meshMe,'(10f20.12)') particleData(GLOB_PART_PROP), zL2, zL, zpres
+>   write(9900+gr_meshMe,'(30f20.12)') particleData(GLOB_PART_PROP), zv(1), w_l(1), w_c(1), w_cc(1)
+959c968
+<         call ib_stencils(xbe,np,gridfl,del,coord,bsize,   & 
+---
+>         call ib_stencils(xbe,np,gridfl,del,coord,bsize,   &
+964c973
+<         xyz_stencil(1:ib_stencil,1:MDIM) = 0. 
+---
+>         xyz_stencil(1:ib_stencil,1:MDIM) = 0.
+967c976
+<                 real(ielem(1:ib_stencil,idim,presflag+1) - NGUARD - 1)*del(idim) + delaux(idim) 
+---
+>                 real(ielem(1:ib_stencil,idim,presflag+1) - NGUARD - 1)*del(idim) + delaux(idim)
+972c981
+<     
+---
+> 
+983c992
+<            do i = 1 , ib_stencil      
+---
+>            do i = 1 , ib_stencil
+986c995
+<                                       ielem(i,KAXIS,presflag+1));  
+---
+>                                       ielem(i,KAXIS,presflag+1));
+988c997
+<               zpres = zpres + phile(i,1)*p_i 
+---
+>               zpres = zpres + phile(i,1)*p_i
+995c1004
+< #endif             
+---
+> #endif
+1004c1013
+<            dpdn = -(     ubdd*nxp +      vbdd*nyp +      wbdd*nzp) + & ! -rho*Du/Dt * n 
+---
+>            dpdn = -(     ubdd*nxp +      vbdd*nyp +      wbdd*nzp) + & ! -rho*Du/Dt * n
+1011c1020
+<  
+---
+> 
+1013c1022
+<            case(1) 
+---
+>            case(1)
+1016c1025
+<            do i = 1 , ib_stencil      
+---
+>            do i = 1 , ib_stencil
+1019c1028
+<                                                            ielem(i,KAXIS,presflag+1)); 
+---
+>                                                            ielem(i,KAXIS,presflag+1));
+1026c1035
+<            do i = 1 , ib_stencil      
+---
+>            do i = 1 , ib_stencil
+1029c1038
+<                                                            ielem(i,KAXIS,presflag+1)); 
+---
+>                                                            ielem(i,KAXIS,presflag+1));
+1031c1040
+<            nuwx = nu*zv(gridind)          
+---
+>            nuwx = nu*zv(gridind)
+1036c1045
+<            do i = 1 , ib_stencil      
+---
+>            do i = 1 , ib_stencil
+1039c1048
+<                                                            ielem(i,KAXIS,presflag+1)); 
+---
+>                                                            ielem(i,KAXIS,presflag+1));
+1067c1076
+< #endif             
+---
+> #endif
+1087c1096
+<               ve   = ve   + phile(i,1)*ui; 
+---
+>               ve   = ve   + phile(i,1)*ui;
+1092c1101
+< #endif             
+---
+> #endif
+1099c1108
+<            case(3) 
+---
+>            case(3)
+1128c1137
+<            
+---
+> 
+1147c1156
+< #ifdef TANGENT_WITH_VORTICITY 
+---
+> #ifdef TANGENT_WITH_VORTICITY
+1286c1295
+<   dpdxt = (zpres2-zpres3)/(2.*normt) 
+---
+>   dpdxt = (zpres2-zpres3)/(2.*normt)
+1313c1322
+<  
+---
+> 
+1317c1326
+<   !dwne = dwdx*nxp + dwdy*nyp + dwdz*nzp 
+---
+>   !dwne = dwdx*nxp + dwdy*nyp + dwdz*nzp
+1323,1326c1332,1335
+<   particleData(FXVI_PART_PROP) = nu*dun 
+<   particleData(FYVI_PART_PROP) = nu*dvn 
+<   particleData(FZVI_PART_PROP) = nu*dwn 
+<  
+---
+>   particleData(FXVI_PART_PROP) = nu*dun
+>   particleData(FYVI_PART_PROP) = nu*dvn
+>   particleData(FZVI_PART_PROP) = nu*dwn
+> 
+1343c1352
+<   eyy = dvdy 
+---
+>   eyy = dvdy
+1345c1354
+<   ezz = dwdz 
+---
+>   ezz = dwdz
+Only in ../FallCyl_mult_pcc_Uhlmann/: ImBound_data.F90
+diff ./sm_assemble_repulForce_rigid.F90 ../FallCyl_mult_pcc_Uhlmann/sm_assemble_repulForce_rigid.F90
+1,3c1,3
+< !    
+< ! File:  
+< ! 
+---
+> !
+> ! File:
+> !
+11a12,14
+> !#define WAN_MODEL
+> !#define UHLMANN_MODEL
+> 
+22c25
+< #include "constants.h"    
+---
+> #include "constants.h"
+25c28
+<   
+---
+> 
+28c31
+<   
+---
+> 
+39a43
+> 
+45c49,50
+<   rCir = 0.5
+---
+>   !rCir = 0.5
+>   rCir = 0.125
+91c96
+<   end do 
+---
+>   end do
+93c98
+<   ! Moments: 
+---
+>   ! Moments:
+109c114
+<     
+---
+> 
+diff ./sm_set_cm_para.F90 ../FallCyl_mult_pcc_Uhlmann/sm_set_cm_para.F90
+6c6
+< !!  
+---
+> !!
+11c11
+< !! Set the parameters for the collision model 
+---
+> !! Set the parameters for the collision model
+30,31c30,31
+< #ifdef FLASH_GRID_PARAMESH 
+<   call Driver_abortFlash('The routine sm_set_cm_para has not been tested for the PARAMESH')  
+---
+> #ifdef FLASH_GRID_PARAMESH
+>   call Driver_abortFlash('The routine sm_set_cm_para has not been tested for the PARAMESH')
+36,37c36,39
+<   sm_cm_rhou = 2.*Dmin  ! because the exteral probe point is at nh=2*Dmin
+<   sm_cm_eps1 = Dmin*Dmin/100.
+---
+>   !sm_cm_rhou = 2.*Dmin  ! because the exteral probe point is at nh=2*Dmin
+>   sm_cm_rhou = 3.*Dmin  ! because the exteral probe point is at nh=2*Dmin
+>   !sm_cm_eps1 = Dmin*Dmin/100.
+>   sm_cm_eps1 = 5.0D-7  ! Uhlmann's JCP, 2005
+47c49
+<   
+---
+> 
+Common subdirectories: ./.svn and ../FallCyl_mult_pcc_Uhlmann/.svn

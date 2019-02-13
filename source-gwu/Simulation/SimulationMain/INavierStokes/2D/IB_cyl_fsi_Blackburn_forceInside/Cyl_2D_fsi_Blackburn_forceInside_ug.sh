@@ -1,0 +1,1 @@
+./setup INavierStokes/2D/IB_cyl_fsi_Blackburn_forceInside/  -2d -auto -opt +ug -nxb=250 -nyb=250 -maxblocks=1 -gridinterpolation=native PfftSolver=HomBcTrigSolver  -objdir=CYL_2D_BLACKBURN_FSI_FORCEINSIDE_UG -site=colonialone.gwu.edu
